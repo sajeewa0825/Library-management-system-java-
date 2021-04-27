@@ -63,7 +63,12 @@ public class main_menu extends javax.swing.JFrame {
         btn_update.setBackground(new java.awt.Color(0, 0, 255));
         btn_update.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         btn_update.setForeground(new java.awt.Color(255, 255, 255));
-        btn_update.setText("UPDATE");
+        btn_update.setText("SETTING");
+        btn_update.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_updateActionPerformed(evt);
+            }
+        });
         jPanel2.add(btn_update, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 120, 160, 40));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 240, 200, 170));
@@ -209,6 +214,11 @@ public class main_menu extends javax.swing.JFrame {
        new find_book().setVisible(true);
        this.setVisible(false);
     }//GEN-LAST:event_btn_find_bookActionPerformed
+
+    private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
+        new setting().setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_btn_updateActionPerformed
 
     /**
      * @param args the command line arguments

@@ -15,6 +15,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.Timer;
 import javax.swing.plaf.FileChooserUI;
+import code.lms.DBconnect;
+import com.mysql.cj.protocol.Resultset;
+import com.mysql.cj.xdevapi.Result;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import javax.naming.spi.DirStateFactory;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -29,12 +36,17 @@ public class addbook extends javax.swing.JFrame {
         initComponents();
         showdate();
         showTime();
+        connect = DBconnect.connect();
 
     }
 
+    Connection connect = null;
+    PreparedStatement prt = null;
+    Resultset rs= null;
+
     void showdate() {
         Date d = new Date();
-        SimpleDateFormat s = new SimpleDateFormat("MM-dd-yyyy");
+        SimpleDateFormat s = new SimpleDateFormat("MM/dd/yyyy");
         date.setText(s.format(d));
     }
 
@@ -48,6 +60,7 @@ public class addbook extends javax.swing.JFrame {
             }
         }).start();
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -69,7 +82,7 @@ public class addbook extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         time = new javax.swing.JLabel();
         btn_clear = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnsubmit = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         bookphoto = new javax.swing.JLabel();
         addbook = new javax.swing.JButton();
@@ -133,10 +146,15 @@ public class addbook extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(0, 51, 255));
-        jButton2.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("SUBMIT");
+        btnsubmit.setBackground(new java.awt.Color(0, 51, 255));
+        btnsubmit.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        btnsubmit.setForeground(new java.awt.Color(255, 255, 255));
+        btnsubmit.setText("SUBMIT");
+        btnsubmit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnsubmitActionPerformed(evt);
+            }
+        });
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -183,7 +201,7 @@ public class addbook extends javax.swing.JFrame {
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                             .addComponent(btn_clear, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(18, 18, 18)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnsubmit, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -211,30 +229,31 @@ public class addbook extends javax.swing.JFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(bookname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(book_author, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(25, 25, 25)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(date))
-                .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addComponent(time, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(52, 52, 52)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_clear, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2))
-                .addContainerGap(82, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(bookname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(book_author, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(25, 25, 25)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(date))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6)
+                            .addComponent(time, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(52, 52, 52)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btn_clear, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnsubmit)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(41, Short.MAX_VALUE))
         );
 
@@ -284,7 +303,7 @@ public class addbook extends javax.swing.JFrame {
     private void btn_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_clearActionPerformed
         bookname.setText("");
         book_author.setText("");
-        
+
     }//GEN-LAST:event_btn_clearActionPerformed
 
     private void jLabel11MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel11MouseClicked
@@ -302,16 +321,30 @@ public class addbook extends javax.swing.JFrame {
     }//GEN-LAST:event_book_authorActionPerformed
 
     private void addbookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addbookActionPerformed
-       JFileChooser chooser = new JFileChooser();
-       chooser.showOpenDialog(null);
-       File f  = chooser.getSelectedFile();
-       String filename = f.getAbsolutePath();
-       Image getAbsolutePath= null;
-       ImageIcon icon = new ImageIcon(filename);
-       Image image = icon.getImage().getScaledInstance(bookphoto.getWidth(), bookphoto.getHeight(), Image.SCALE_SMOOTH);
-       bookphoto.setIcon(icon);
-       
+        JFileChooser chooser = new JFileChooser();
+        chooser.showOpenDialog(null);
+        File f = chooser.getSelectedFile();
+        String filename = f.getAbsolutePath();
+        Image getAbsolutePath = null;
+        ImageIcon icon = new ImageIcon(filename);
+        Image image = icon.getImage().getScaledInstance(bookphoto.getWidth(), bookphoto.getHeight(), Image.SCALE_SMOOTH);
+        bookphoto.setIcon(icon);
+
     }//GEN-LAST:event_addbookActionPerformed
+
+    private void btnsubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsubmitActionPerformed
+        String book_name = bookname.getText();
+        String book_author = this.book_author.getText();
+
+        try {
+            String sql = "INSERT INTO bookstore(book_name,book_author) VALUES('" + book_name + "' , '" + book_author + "')";
+            prt = connect.prepareStatement(sql);
+            prt.execute();
+            JOptionPane.showMessageDialog(null, "Insert succesfuly");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }//GEN-LAST:event_btnsubmitActionPerformed
 
     /**
      * @param args the command line arguments
@@ -355,8 +388,8 @@ public class addbook extends javax.swing.JFrame {
     private javax.swing.JTextField bookname;
     private javax.swing.JLabel bookphoto;
     private javax.swing.JButton btn_clear;
+    private javax.swing.JButton btnsubmit;
     private javax.swing.JLabel date;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

@@ -6,6 +6,8 @@
 package code.lms;
 
 import javax.swing.JOptionPane;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 /**
  *
@@ -18,7 +20,12 @@ public class signup extends javax.swing.JFrame {
      */
     public signup() {
         initComponents();
+        connect = DBconnect.connect();
     }
+        Connection connect = null;
+    PreparedStatement prt = null;
+
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -30,13 +37,13 @@ public class signup extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jPasswordField1 = new javax.swing.JPasswordField();
-        jPasswordField2 = new javax.swing.JPasswordField();
+        l_name = new javax.swing.JTextField();
+        email = new javax.swing.JTextField();
+        f_name = new javax.swing.JTextField();
+        password1 = new javax.swing.JPasswordField();
+        password = new javax.swing.JPasswordField();
         jCheckBox1 = new javax.swing.JCheckBox();
-        jButton1 = new javax.swing.JButton();
+        create_account = new javax.swing.JButton();
         login = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -49,41 +56,46 @@ public class signup extends javax.swing.JFrame {
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTextField2.setBackground(new java.awt.Color(204, 204, 204));
-        jTextField2.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jTextField2.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1020, 290, 280, 50));
+        l_name.setBackground(new java.awt.Color(204, 204, 204));
+        l_name.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        l_name.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel1.add(l_name, new org.netbeans.lib.awtextra.AbsoluteConstraints(1020, 290, 280, 50));
 
-        jTextField1.setBackground(new java.awt.Color(204, 204, 204));
-        jTextField1.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jTextField1.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 400, 580, 50));
+        email.setBackground(new java.awt.Color(204, 204, 204));
+        email.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        email.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel1.add(email, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 400, 580, 50));
 
-        jTextField3.setBackground(new java.awt.Color(204, 204, 204));
-        jTextField3.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jTextField3.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel1.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 290, 280, 50));
+        f_name.setBackground(new java.awt.Color(204, 204, 204));
+        f_name.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        f_name.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel1.add(f_name, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 290, 280, 50));
 
-        jPasswordField1.setBackground(new java.awt.Color(204, 204, 204));
-        jPasswordField1.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jPasswordField1.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel1.add(jPasswordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1020, 500, 280, 60));
+        password1.setBackground(new java.awt.Color(204, 204, 204));
+        password1.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        password1.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel1.add(password1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1020, 500, 280, 60));
 
-        jPasswordField2.setBackground(new java.awt.Color(204, 204, 204));
-        jPasswordField2.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jPasswordField2.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel1.add(jPasswordField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 502, 270, 60));
+        password.setBackground(new java.awt.Color(204, 204, 204));
+        password.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        password.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel1.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 502, 270, 60));
 
         jCheckBox1.setBackground(new java.awt.Color(204, 204, 204));
         jCheckBox1.setFont(new java.awt.Font("Dialog", 0, 24)); // NOI18N
         jCheckBox1.setForeground(new java.awt.Color(0, 204, 0));
         jPanel1.add(jCheckBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 590, -1, 20));
 
-        jButton1.setBackground(new java.awt.Color(0, 0, 255));
-        jButton1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Create Account");
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 660, 260, 60));
+        create_account.setBackground(new java.awt.Color(0, 0, 255));
+        create_account.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        create_account.setForeground(new java.awt.Color(255, 255, 255));
+        create_account.setText("Create Account");
+        create_account.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                create_accountActionPerformed(evt);
+            }
+        });
+        jPanel1.add(create_account, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 660, 260, 60));
 
         login.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -136,6 +148,24 @@ public class signup extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_jLabel2MouseClicked
 
+    private void create_accountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_create_accountActionPerformed
+        String firstname, lastname, email, password;
+        firstname = f_name.getText();
+        lastname = l_name.getText();
+        email = this.email.getText();
+        password = this.password.getText();
+
+        try {
+            String sql = "INSERT INTO person(first_name, last_name,email,password) VALUES('" + firstname + "','" +lastname + "','" + email + "','" +password+ "')";
+            prt = connect.prepareStatement(sql);
+            prt.execute();
+            JOptionPane.showMessageDialog(null, "Insert succesfully");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+
+    }//GEN-LAST:event_create_accountActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -172,17 +202,17 @@ public class signup extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton create_account;
+    private javax.swing.JTextField email;
+    private javax.swing.JTextField f_name;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JPasswordField jPasswordField2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField l_name;
     private javax.swing.JLabel login;
+    private javax.swing.JPasswordField password;
+    private javax.swing.JPasswordField password1;
     // End of variables declaration//GEN-END:variables
 }

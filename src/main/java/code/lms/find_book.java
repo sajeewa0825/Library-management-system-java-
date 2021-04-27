@@ -5,6 +5,8 @@
  */
 package code.lms;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author sajeewa
@@ -17,6 +19,8 @@ public class find_book extends javax.swing.JFrame {
     public find_book() {
         initComponents();
     }
+    
+   
 
     /**
      * This method is called from within the constructor to initialize the form.
