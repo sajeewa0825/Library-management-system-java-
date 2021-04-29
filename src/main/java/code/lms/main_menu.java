@@ -169,6 +169,11 @@ public class main_menu extends javax.swing.JFrame {
         btn_hand_over.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         btn_hand_over.setForeground(new java.awt.Color(255, 255, 255));
         btn_hand_over.setText("HAND OVER");
+        btn_hand_over.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_hand_overActionPerformed(evt);
+            }
+        });
         jPanel7.add(btn_hand_over, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 120, 160, 40));
 
         jPanel1.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 50, 200, 170));
@@ -219,6 +224,11 @@ public class main_menu extends javax.swing.JFrame {
         new setting().setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_btn_updateActionPerformed
+
+    private void btn_hand_overActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_hand_overActionPerformed
+        new hand_over().setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_btn_hand_overActionPerformed
 
     /**
      * @param args the command line arguments

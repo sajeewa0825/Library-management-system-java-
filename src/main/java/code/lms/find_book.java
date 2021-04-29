@@ -5,7 +5,13 @@
  */
 package code.lms;
 
+import com.mysql.cj.protocol.Resultset;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import net.proteanit.sql.DbUtils;
 
 /**
  *
@@ -16,11 +22,100 @@ public class find_book extends javax.swing.JFrame {
     /**
      * Creates new form find_book
      */
+    Connection con = DBconnect.connect();
+    PreparedStatement prt;
+    Resultset rs = null;
+
     public find_book() {
         initComponents();
+        con = DBconnect.connect();
+        book_table_load();
+        person_table_load();
     }
-    
-   
+
+    public void book_table_load() {
+        try {
+            String sql = "SELECT `book_id`, `book_name`, `book_author` FROM `bookstore`";
+            prt = con.prepareStatement(sql);
+            rs = (Resultset) prt.executeQuery();
+            booktable.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void person_table_load() {
+        try {
+            String sql = "SELECT `id`, `first_name` FROM `person`";
+            prt = con.prepareStatement(sql);
+            rs = (Resultset) prt.executeQuery();
+            persontable.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void p_table_select() {
+        int pdata = persontable.getSelectedRow();
+
+        String id = persontable.getValueAt(pdata, 0).toString();;
+        String f_names = persontable.getValueAt(pdata, 1).toString();
+
+        p_name.setText(f_names);
+        p_id.setText(id);
+    }
+
+    public void book_select() {
+        int bdata = booktable.getSelectedRow();
+
+        String bid = booktable.getValueAt(bdata, 0).toString();
+        String b_names = booktable.getValueAt(bdata, 1).toString();
+        String b_authors = booktable.getValueAt(bdata, 2).toString();
+
+        b_id.setText(bid);
+        b_author2.setText(b_authors);
+        b_name1.setText(b_names);
+    }
+
+    public void book_serch() {
+        String searchdata = b_serch.getText();
+
+        try {
+            String sql = "SELECT * FROM bookstore WHERE book_name LIKE '%" + searchdata + "%' or book_id LIKE '%" + searchdata + "%' or book_author LIKE '%" + searchdata + "%' ";
+            prt = con.prepareStatement(sql);
+            rs = (Resultset) prt.executeQuery();
+            booktable.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void person_serch() {
+        String searchdata = p_search.getText();
+        try {
+            String sql = "SELECT * FROM person WHERE first_name LIKE '%" + searchdata + "%' or id LIKE '%" + searchdata + "%' or last_name LIKE '%" + searchdata + "%' or email LIKE '%" + searchdata + "%'  ";
+            prt = con.prepareStatement(sql);
+            rs = (Resultset) prt.executeQuery();
+            persontable.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void getbook() {
+        String book_id, person_id;
+        book_id = b_id.getText();
+        person_id = p_id.getText();
+
+        try {
+            String sql = "INSERT INTO `getbook`( `book_id`, `person_id`) VALUES ('" + book_id + "','" +person_id + "')";
+            prt = con.prepareStatement(sql);
+            prt.execute();
+            JOptionPane.showMessageDialog(null, "Get Book succesfully");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -35,18 +130,22 @@ public class find_book extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        persontable = new javax.swing.JTable();
+        b_id = new javax.swing.JLabel();
+        b_name1 = new javax.swing.JLabel();
+        p_id = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        booktable = new javax.swing.JTable();
+        b_author2 = new javax.swing.JLabel();
+        p_name = new javax.swing.JLabel();
+        p_search = new javax.swing.JTextField();
+        b_serchbtn = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        b_serch = new javax.swing.JTextField();
+        p_serchbtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -69,91 +168,124 @@ public class find_book extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(150, 197, 230));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 204, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 207, Short.MAX_VALUE)
-        );
-
-        jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 10, -1, -1));
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 204, Short.MAX_VALUE)
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 207, Short.MAX_VALUE)
-        );
-
-        jPanel3.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, -1, -1));
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 204, Short.MAX_VALUE)
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 207, Short.MAX_VALUE)
-        );
-
-        jPanel3.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 10, -1, -1));
-
-        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
-        jPanel7.setLayout(jPanel7Layout);
-        jPanel7Layout.setHorizontalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 204, Short.MAX_VALUE)
-        );
-        jPanel7Layout.setVerticalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 207, Short.MAX_VALUE)
-        );
-
-        jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 10, -1, -1));
-
         jButton1.setBackground(new java.awt.Color(170, 57, 57));
         jButton1.setFont(new java.awt.Font("Dialog", 3, 12)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 170, 170));
         jButton1.setText("GET BOOK");
-        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 220, -1, -1));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 210, -1, -1));
 
-        jButton2.setBackground(new java.awt.Color(170, 57, 57));
-        jButton2.setFont(new java.awt.Font("Dialog", 3, 12)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 170, 170));
-        jButton2.setText("GET BOOK");
-        jPanel3.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 220, -1, -1));
+        persontable.setBackground(new java.awt.Color(255, 255, 255));
+        persontable.setForeground(new java.awt.Color(0, 0, 0));
+        persontable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2"
+            }
+        ));
+        persontable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                persontableMouseClicked(evt);
+            }
+        });
+        persontable.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                persontableKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                persontableKeyReleased(evt);
+            }
+        });
+        jScrollPane1.setViewportView(persontable);
 
-        jButton3.setBackground(new java.awt.Color(170, 57, 57));
-        jButton3.setFont(new java.awt.Font("Dialog", 3, 12)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(255, 170, 170));
-        jButton3.setText("GET BOOK");
-        jPanel3.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 220, -1, -1));
+        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 10, 270, 170));
 
-        jButton4.setBackground(new java.awt.Color(170, 57, 57));
-        jButton4.setFont(new java.awt.Font("Dialog", 3, 12)); // NOI18N
-        jButton4.setForeground(new java.awt.Color(255, 170, 170));
-        jButton4.setText("GET BOOK");
-        jPanel3.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 220, -1, -1));
+        b_id.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        b_id.setForeground(new java.awt.Color(0, 0, 0));
+        b_id.setText("id");
+        jPanel3.add(b_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, 90, 40));
+
+        b_name1.setBackground(new java.awt.Color(0, 0, 0));
+        b_name1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        b_name1.setForeground(new java.awt.Color(0, 0, 0));
+        b_name1.setText("b_name");
+        jPanel3.add(b_name1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 200, 200, 40));
+
+        p_id.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        p_id.setForeground(new java.awt.Color(0, 0, 0));
+        p_id.setText("p_id");
+        jPanel3.add(p_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 200, 140, 40));
+
+        booktable.setBackground(new java.awt.Color(255, 255, 255));
+        booktable.setForeground(new java.awt.Color(0, 0, 0));
+        booktable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "null"
+            }
+        ));
+        booktable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                booktableMouseClicked(evt);
+            }
+        });
+        booktable.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                booktableKeyReleased(evt);
+            }
+        });
+        jScrollPane2.setViewportView(booktable);
+
+        jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, 510, 170));
+
+        b_author2.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        b_author2.setForeground(new java.awt.Color(0, 0, 0));
+        b_author2.setText("b_author");
+        jPanel3.add(b_author2, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 200, 140, 40));
+
+        p_name.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        p_name.setForeground(new java.awt.Color(0, 0, 0));
+        p_name.setText("p_name");
+        jPanel3.add(p_name, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 200, 140, 40));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 140, 1010, 250));
 
-        jTextField1.setBackground(new java.awt.Color(150, 197, 230));
-        jTextField1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jTextField1.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 50, 330, 40));
+        p_search.setBackground(new java.awt.Color(150, 197, 230));
+        p_search.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        p_search.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel1.add(p_search, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, 330, -1));
 
-        jLabel2.setIcon(new javax.swing.ImageIcon("E:\\java_test\\LMS\\src\\main\\java\\imsges\\searchbtn.png.jpg")); // NOI18N
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 40, -1, 60));
+        b_serchbtn.setIcon(new javax.swing.ImageIcon("E:\\java_test\\LMS\\src\\main\\java\\imsges\\searchbtn.png.jpg")); // NOI18N
+        b_serchbtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                b_serchbtnMouseClicked(evt);
+            }
+        });
+        jPanel1.add(b_serchbtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 60, -1, 60));
 
         jLabel3.setIcon(new javax.swing.ImageIcon("E:\\java_test\\LMS\\src\\main\\java\\imsges\\home1.png")); // NOI18N
         jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -173,6 +305,19 @@ public class find_book extends javax.swing.JFrame {
         });
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 46, 50, 20));
 
+        b_serch.setBackground(new java.awt.Color(150, 197, 230));
+        b_serch.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        b_serch.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel1.add(b_serch, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 70, 330, 40));
+
+        p_serchbtn.setText("Person Search");
+        p_serchbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                p_serchbtnActionPerformed(evt);
+            }
+        });
+        jPanel1.add(p_serchbtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, -1, -1));
+
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1010, 560));
 
         setSize(new java.awt.Dimension(1024, 597));
@@ -188,6 +333,38 @@ public class find_book extends javax.swing.JFrame {
         new main_menu().setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jLabel3MouseClicked
+
+    private void persontableKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_persontableKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_persontableKeyPressed
+
+    private void persontableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_persontableMouseClicked
+        p_table_select();
+    }//GEN-LAST:event_persontableMouseClicked
+
+    private void persontableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_persontableKeyReleased
+        p_table_select();
+    }//GEN-LAST:event_persontableKeyReleased
+
+    private void booktableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_booktableKeyReleased
+        book_select();
+    }//GEN-LAST:event_booktableKeyReleased
+
+    private void booktableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_booktableMouseClicked
+        book_select();
+    }//GEN-LAST:event_booktableMouseClicked
+
+    private void b_serchbtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_b_serchbtnMouseClicked
+        book_serch();
+    }//GEN-LAST:event_b_serchbtnMouseClicked
+
+    private void p_serchbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_p_serchbtnActionPerformed
+        person_serch();
+    }//GEN-LAST:event_p_serchbtnActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        getbook();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -225,21 +402,25 @@ public class find_book extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel b_author2;
+    private javax.swing.JLabel b_id;
+    private javax.swing.JLabel b_name1;
+    private javax.swing.JTextField b_serch;
+    private javax.swing.JLabel b_serchbtn;
+    private javax.swing.JTable booktable;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel p_id;
+    private javax.swing.JLabel p_name;
+    private javax.swing.JTextField p_search;
+    private javax.swing.JButton p_serchbtn;
+    private javax.swing.JTable persontable;
     // End of variables declaration//GEN-END:variables
 }

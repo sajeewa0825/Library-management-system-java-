@@ -47,17 +47,6 @@ public final class setting extends javax.swing.JFrame {
 
     }
 
-    public void book_table_load() {
-        try {
-            String sql = "SELECT * FROM bookstore";
-            prt = con.prepareStatement(sql);
-            rs = (Resultset) prt.executeQuery();
-            table_book_store.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, e);
-        }
-    }
-
     public void p_table_data() {
         int pdata = table1.getSelectedRow();
 
@@ -122,6 +111,206 @@ public final class setting extends javax.swing.JFrame {
         }
     }
 
+    public void book_table_load() {
+        try {
+            String sql = "SELECT * FROM bookstore";
+            prt = con.prepareStatement(sql);
+            rs = (Resultset) prt.executeQuery();
+            table_book_store.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void book_table_data() {
+        int bdata = table_book_store.getSelectedRow();
+
+        String bid = table_book_store.getValueAt(bdata, 0).toString();
+        String b_names = table_book_store.getValueAt(bdata, 1).toString();
+        String b_authors = table_book_store.getValueAt(bdata, 2).toString();
+
+        b_id.setText(bid);
+        b_author.setText(b_authors);
+        b_name.setText(b_names);
+
+    }
+
+    public void b_update() {
+        String bid = b_id.getText();
+        String b_name_update = b_name.getText();
+        String b_author_update = b_author.getText();
+
+        try {
+            String sql = "UPDATE bookstore SET book_name='" + b_name_update + "', book_author='" + b_author_update + "' WHERE book_id='" + bid + "'";
+            prt = con.prepareStatement(sql);
+            prt.execute();
+            JOptionPane.showMessageDialog(null, "updated");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void b_delete() {
+        int check = JOptionPane.showConfirmDialog(null, "confirm delete");
+
+        try {
+            String id = b_id.getText();
+            if (check == 0) {
+                String sql = "DELETE FROM bookstore WHERE book_id='" + id + "'";
+                prt = con.prepareStatement(sql);
+                prt.execute();
+                JOptionPane.showMessageDialog(null, "deleted");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void b_search() {
+        String searchdata = book_search.getText();
+
+        try {
+            String sql = "SELECT * FROM bookstore WHERE book_name LIKE '%" + searchdata + "%' or book_id LIKE '%" + searchdata + "%' or book_author LIKE '%" + searchdata + "%' ";
+            prt = con.prepareStatement(sql);
+            rs = (Resultset) prt.executeQuery();
+            table_book_store.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void get_book() {
+        try {
+            String sql = "SELECT * FROM `getbook`";
+            prt = con.prepareStatement(sql);
+            rs = (Resultset) prt.executeQuery();
+            get_book_table.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void book_hand_over() {
+        try {
+            String sql = "SELECT * FROM `hand_over`";
+            prt = con.prepareStatement(sql);
+            rs = (Resultset) prt.executeQuery();
+            hand_over_table.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void book_hand_over_search() {
+        String searchdata = h_serch.getText();
+
+        try {
+            String sql = "SELECT * FROM hand_over WHERE return_id LIKE '%" + searchdata + "%' or get_id LIKE '%" + searchdata + "%'";
+            prt = con.prepareStatement(sql);
+            rs = (Resultset) prt.executeQuery();
+            hand_over_table.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void get_book_search() {
+        String searchdata = get_serch.getText();
+
+        try {
+            String sql = "SELECT * FROM getbook WHERE getbook_id LIKE '%" + searchdata + "%' or book_id LIKE '%" + searchdata + "%' or person_id LIKE '%" + searchdata + "%'";
+            prt = con.prepareStatement(sql);
+            rs = (Resultset) prt.executeQuery();
+            get_book_table.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void get_book_update() {
+        String b_id = book_id_text.getText();
+        String g_id = get_book_id.getText();
+        String p_id = person_id_text.getText();
+
+        try {
+            String sql = "UPDATE getbook SET book_id='" + b_id + "', person_id='" + p_id + "' WHERE getbook_id='" + g_id + "'";
+            prt = con.prepareStatement(sql);
+            prt.execute();
+            JOptionPane.showMessageDialog(null, "updated");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void get_book_select() {
+        int bdata = get_book_table.getSelectedRow();
+
+        String get = get_book_table.getValueAt(bdata, 0).toString();
+        String book = get_book_table.getValueAt(bdata, 1).toString();
+        String person = get_book_table.getValueAt(bdata, 2).toString();
+
+        get_book_id.setText(get);
+        book_id_text.setText(book);
+        person_id_text.setText(person);
+    }
+
+    public void get_book_delete() {
+        int check = JOptionPane.showConfirmDialog(null, "confirm delete");
+
+        try {
+            String id = get_book_id.getText();
+            if (check == 0) {
+                String sql = "DELETE FROM getbook WHERE book_id='" + id + "'";
+                prt = con.prepareStatement(sql);
+                prt.execute();
+                JOptionPane.showMessageDialog(null, "deleted");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void hand_over_select() {
+        int bdata = hand_over_table.getSelectedRow();
+
+        String r_id = hand_over_table.getValueAt(bdata, 0).toString();
+        String g_id = hand_over_table.getValueAt(bdata, 1).toString();
+
+        this.r_id.setText(r_id);
+        get_id_text.setText(g_id);
+
+    }
+
+    public void hand_over_update() {
+        String rid = r_id.getText();
+        String gid = get_id_text.getText();
+
+        try {
+            String sql = "UPDATE hand_over SET get_id='" + gid + "' WHERE return_id='" + rid + "'";
+            prt = con.prepareStatement(sql);
+            prt.execute();
+            JOptionPane.showMessageDialog(null, "updated");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void hand_over_delete() {
+        int check = JOptionPane.showConfirmDialog(null, "confirm delete");
+
+        try {
+            String id = r_id.getText();
+            if (check == 0) {
+                String sql = "DELETE FROM hand_over WHERE return_id='" + id + "'";
+                prt = con.prepareStatement(sql);
+                prt.execute();
+                JOptionPane.showMessageDialog(null, "deleted");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
     void firstpannel() {
         persondata.setVisible(true);
         bookhandover.setVisible(false);
@@ -168,7 +357,7 @@ public final class setting extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         table1 = new javax.swing.JTable();
         bookstore = new javax.swing.JPanel();
-        jTextField6 = new javax.swing.JTextField();
+        book_search = new javax.swing.JTextField();
         jButton5 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         table_book_store = new javax.swing.JTable();
@@ -176,23 +365,39 @@ public final class setting extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         b_id = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
-        jTextField7 = new javax.swing.JTextField();
+        b_name = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
-        jTextField8 = new javax.swing.JTextField();
-        jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
+        b_author = new javax.swing.JTextField();
+        clear = new javax.swing.JButton();
+        b_update = new javax.swing.JButton();
+        b_delete = new javax.swing.JButton();
         jLabel16 = new javax.swing.JLabel();
         bookhandover = new javax.swing.JPanel();
-        jButton9 = new javax.swing.JButton();
-        jTextField9 = new javax.swing.JTextField();
+        get_book_serch = new javax.swing.JButton();
+        h_serch = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        hand_over_table = new javax.swing.JTable();
+        jButton2 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        jButton7 = new javax.swing.JButton();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        r_id = new javax.swing.JLabel();
+        get_id_text = new javax.swing.JTextField();
         get_book = new javax.swing.JPanel();
         jButton10 = new javax.swing.JButton();
-        jTextField10 = new javax.swing.JTextField();
+        get_serch = new javax.swing.JTextField();
         jScrollPane3 = new javax.swing.JScrollPane();
-        person_table = new javax.swing.JTable();
+        get_book_table = new javax.swing.JTable();
+        jButton8 = new javax.swing.JButton();
+        jButton9 = new javax.swing.JButton();
+        jButton12 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        book_id_text = new javax.swing.JTextField();
+        person_id_text = new javax.swing.JTextField();
+        jLabel13 = new javax.swing.JLabel();
+        get_book_id = new javax.swing.JLabel();
         security = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -211,6 +416,11 @@ public final class setting extends javax.swing.JFrame {
 
         jLabel1.setIcon(new javax.swing.ImageIcon("E:\\java_test\\LMS\\src\\main\\java\\imsges\\home1.png")); // NOI18N
         jLabel1.setText("HOME");
+        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel1MouseClicked(evt);
+            }
+        });
 
         account.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         account.setIcon(new javax.swing.ImageIcon("E:\\java_test\\LMS\\src\\main\\java\\imsges\\sperson.jpg")); // NOI18N
@@ -508,14 +718,19 @@ public final class setting extends javax.swing.JFrame {
 
         bookstore.setBackground(new java.awt.Color(165, 186, 206));
 
-        jTextField6.setBackground(new java.awt.Color(255, 255, 255));
-        jTextField6.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jTextField6.setForeground(new java.awt.Color(0, 0, 0));
+        book_search.setBackground(new java.awt.Color(255, 255, 255));
+        book_search.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        book_search.setForeground(new java.awt.Color(0, 0, 0));
 
         jButton5.setBackground(new java.awt.Color(0, 0, 255));
         jButton5.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jButton5.setForeground(new java.awt.Color(255, 255, 255));
         jButton5.setText("Search");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         table_book_store.setBackground(new java.awt.Color(255, 255, 255));
         table_book_store.setForeground(new java.awt.Color(0, 0, 0));
@@ -530,6 +745,16 @@ public final class setting extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        table_book_store.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table_book_storeMouseClicked(evt);
+            }
+        });
+        table_book_store.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                table_book_storeKeyReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(table_book_store);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -546,32 +771,47 @@ public final class setting extends javax.swing.JFrame {
         jLabel14.setForeground(new java.awt.Color(0, 0, 0));
         jLabel14.setText("BOOK NAME");
 
-        jTextField7.setBackground(new java.awt.Color(255, 255, 255));
-        jTextField7.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jTextField7.setForeground(new java.awt.Color(0, 0, 0));
+        b_name.setBackground(new java.awt.Color(255, 255, 255));
+        b_name.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        b_name.setForeground(new java.awt.Color(0, 0, 0));
 
         jLabel15.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(0, 0, 0));
         jLabel15.setText("AUTHOUR");
 
-        jTextField8.setBackground(new java.awt.Color(255, 255, 255));
-        jTextField8.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jTextField8.setForeground(new java.awt.Color(0, 0, 0));
+        b_author.setBackground(new java.awt.Color(255, 255, 255));
+        b_author.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        b_author.setForeground(new java.awt.Color(0, 0, 0));
 
-        jButton6.setBackground(new java.awt.Color(0, 0, 255));
-        jButton6.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jButton6.setForeground(new java.awt.Color(255, 255, 255));
-        jButton6.setText("Clear");
+        clear.setBackground(new java.awt.Color(0, 0, 255));
+        clear.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        clear.setForeground(new java.awt.Color(255, 255, 255));
+        clear.setText("Clear");
+        clear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearActionPerformed(evt);
+            }
+        });
 
-        jButton7.setBackground(new java.awt.Color(0, 0, 255));
-        jButton7.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jButton7.setForeground(new java.awt.Color(255, 255, 255));
-        jButton7.setText("Update");
+        b_update.setBackground(new java.awt.Color(0, 0, 255));
+        b_update.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        b_update.setForeground(new java.awt.Color(255, 255, 255));
+        b_update.setText("Update");
+        b_update.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b_updateActionPerformed(evt);
+            }
+        });
 
-        jButton8.setBackground(new java.awt.Color(0, 0, 255));
-        jButton8.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jButton8.setForeground(new java.awt.Color(255, 255, 255));
-        jButton8.setText("Delete");
+        b_delete.setBackground(new java.awt.Color(0, 0, 255));
+        b_delete.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        b_delete.setForeground(new java.awt.Color(255, 255, 255));
+        b_delete.setText("Delete");
+        b_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b_deleteActionPerformed(evt);
+            }
+        });
 
         jLabel16.setText("PHOTO");
 
@@ -581,11 +821,11 @@ public final class setting extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(81, 81, 81)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(clear, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
-                .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(b_update, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(41, 41, 41)
-                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(b_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(71, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(31, 31, 31)
@@ -596,8 +836,8 @@ public final class setting extends javax.swing.JFrame {
                 .addGap(43, 43, 43)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(b_id, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)
-                    .addComponent(jTextField8))
+                    .addComponent(b_name, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)
+                    .addComponent(b_author))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(14, 14, 14))
@@ -614,19 +854,19 @@ public final class setting extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel14)
-                            .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(b_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel15)
-                            .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(b_author, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton6)
-                    .addComponent(jButton7)
-                    .addComponent(jButton8))
+                    .addComponent(clear)
+                    .addComponent(b_update)
+                    .addComponent(b_delete))
                 .addGap(38, 38, 38))
         );
 
@@ -640,7 +880,7 @@ public final class setting extends javax.swing.JFrame {
                         .addGap(162, 162, 162)
                         .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(book_search, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(bookstoreLayout.createSequentialGroup()
                         .addGap(98, 98, 98)
                         .addGroup(bookstoreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -653,7 +893,7 @@ public final class setting extends javax.swing.JFrame {
             .addGroup(bookstoreLayout.createSequentialGroup()
                 .addGap(51, 51, 51)
                 .addGroup(bookstoreLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(book_search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton5))
                 .addGap(26, 26, 26)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -664,23 +904,31 @@ public final class setting extends javax.swing.JFrame {
 
         bookhandover.setBackground(new java.awt.Color(165, 186, 206));
 
-        jButton9.setBackground(new java.awt.Color(0, 0, 255));
-        jButton9.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jButton9.setForeground(new java.awt.Color(255, 255, 255));
-        jButton9.setText("Search");
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
+        get_book_serch.setBackground(new java.awt.Color(0, 0, 255));
+        get_book_serch.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        get_book_serch.setForeground(new java.awt.Color(255, 255, 255));
+        get_book_serch.setText("Search");
+        get_book_serch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton9ActionPerformed(evt);
+                get_book_serchActionPerformed(evt);
             }
         });
 
-        jTextField9.setBackground(new java.awt.Color(255, 255, 255));
-        jTextField9.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jTextField9.setForeground(new java.awt.Color(0, 0, 0));
+        h_serch.setBackground(new java.awt.Color(255, 255, 255));
+        h_serch.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        h_serch.setForeground(new java.awt.Color(0, 0, 0));
+        h_serch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                h_serchActionPerformed(evt);
+            }
+        });
 
-        jTable2.setBackground(new java.awt.Color(255, 255, 255));
-        jTable2.setForeground(new java.awt.Color(255, 255, 255));
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        jScrollPane2.setBackground(new java.awt.Color(255, 255, 255));
+        jScrollPane2.setForeground(new java.awt.Color(0, 0, 0));
+
+        hand_over_table.setBackground(new java.awt.Color(255, 255, 255));
+        hand_over_table.setForeground(new java.awt.Color(0, 0, 0));
+        hand_over_table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -698,32 +946,120 @@ public final class setting extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane2.setViewportView(jTable2);
+        hand_over_table.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                hand_over_tableMouseClicked(evt);
+            }
+        });
+        hand_over_table.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                hand_over_tableKeyReleased(evt);
+            }
+        });
+        jScrollPane2.setViewportView(hand_over_table);
+
+        jButton2.setBackground(new java.awt.Color(0, 0, 255));
+        jButton2.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jButton2.setForeground(new java.awt.Color(255, 255, 255));
+        jButton2.setText("UPDATE");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton6.setBackground(new java.awt.Color(0, 0, 255));
+        jButton6.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jButton6.setForeground(new java.awt.Color(255, 255, 255));
+        jButton6.setText("DELETE");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        jButton7.setBackground(new java.awt.Color(0, 0, 255));
+        jButton7.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jButton7.setForeground(new java.awt.Color(255, 255, 255));
+        jButton7.setText("CLEAR");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+
+        jLabel18.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel18.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel18.setText("GET ID");
+
+        jLabel17.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel17.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel17.setText("RETURN ID");
+
+        r_id.setBackground(new java.awt.Color(255, 255, 255));
+        r_id.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        r_id.setForeground(new java.awt.Color(0, 0, 0));
+        r_id.setText("GET ID");
+
+        get_id_text.setBackground(new java.awt.Color(255, 255, 255));
+        get_id_text.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        get_id_text.setForeground(new java.awt.Color(0, 0, 0));
 
         javax.swing.GroupLayout bookhandoverLayout = new javax.swing.GroupLayout(bookhandover);
         bookhandover.setLayout(bookhandoverLayout);
         bookhandoverLayout.setHorizontalGroup(
             bookhandoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bookhandoverLayout.createSequentialGroup()
-                .addGap(127, 127, 127)
-                .addGroup(bookhandoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bookhandoverLayout.createSequentialGroup()
+                .addGap(136, 136, 136)
+                .addGroup(bookhandoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(bookhandoverLayout.createSequentialGroup()
-                        .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jTextField9))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 496, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(141, Short.MAX_VALUE))
+                        .addComponent(get_book_serch, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(h_serch, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(bookhandoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(bookhandoverLayout.createSequentialGroup()
+                            .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(75, 75, 75)
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(70, 70, 70)
+                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 496, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(bookhandoverLayout.createSequentialGroup()
+                            .addGap(10, 10, 10)
+                            .addGroup(bookhandoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(18, 18, 18)
+                            .addGroup(bookhandoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(r_id, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(get_id_text, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(132, 132, 132))
         );
         bookhandoverLayout.setVerticalGroup(
             bookhandoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bookhandoverLayout.createSequentialGroup()
-                .addGap(58, 58, 58)
+                .addGap(91, 91, 91)
                 .addGroup(bookhandoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton9)
-                    .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(65, 65, 65)
+                    .addComponent(h_serch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(get_book_serch))
+                .addGap(38, 38, 38)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(201, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(bookhandoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17)
+                    .addComponent(r_id))
+                .addGap(9, 9, 9)
+                .addGroup(bookhandoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel18)
+                    .addComponent(get_id_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(bookhandoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(77, Short.MAX_VALUE))
         );
 
         get_book.setBackground(new java.awt.Color(165, 186, 206));
@@ -732,18 +1068,23 @@ public final class setting extends javax.swing.JFrame {
         jButton10.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jButton10.setForeground(new java.awt.Color(255, 255, 255));
         jButton10.setText("Search");
-
-        jTextField10.setBackground(new java.awt.Color(255, 255, 255));
-        jTextField10.setForeground(new java.awt.Color(0, 0, 0));
-        jTextField10.addActionListener(new java.awt.event.ActionListener() {
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField10ActionPerformed(evt);
+                jButton10ActionPerformed(evt);
             }
         });
 
-        person_table.setBackground(new java.awt.Color(204, 204, 204));
-        person_table.setForeground(new java.awt.Color(0, 0, 0));
-        person_table.setModel(new javax.swing.table.DefaultTableModel(
+        get_serch.setBackground(new java.awt.Color(255, 255, 255));
+        get_serch.setForeground(new java.awt.Color(0, 0, 0));
+        get_serch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                get_serchActionPerformed(evt);
+            }
+        });
+
+        get_book_table.setBackground(new java.awt.Color(255, 255, 255));
+        get_book_table.setForeground(new java.awt.Color(0, 0, 0));
+        get_book_table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -765,32 +1106,137 @@ public final class setting extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane3.setViewportView(person_table);
+        get_book_table.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                get_book_tableMouseClicked(evt);
+            }
+        });
+        get_book_table.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                get_book_tableKeyReleased(evt);
+            }
+        });
+        jScrollPane3.setViewportView(get_book_table);
+
+        jButton8.setBackground(new java.awt.Color(0, 0, 255));
+        jButton8.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jButton8.setForeground(new java.awt.Color(255, 255, 255));
+        jButton8.setText("UPDATE");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
+        jButton9.setBackground(new java.awt.Color(0, 0, 255));
+        jButton9.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jButton9.setForeground(new java.awt.Color(255, 255, 255));
+        jButton9.setText("DELETE");
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
+
+        jButton12.setBackground(new java.awt.Color(0, 0, 255));
+        jButton12.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jButton12.setForeground(new java.awt.Color(255, 255, 255));
+        jButton12.setText("CLEAR");
+        jButton12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton12ActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel3.setText("BOOK ID");
+
+        jLabel6.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel6.setText("PERSON ID");
+
+        book_id_text.setBackground(new java.awt.Color(255, 255, 255));
+        book_id_text.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        book_id_text.setForeground(new java.awt.Color(0, 0, 0));
+
+        person_id_text.setBackground(new java.awt.Color(255, 255, 255));
+        person_id_text.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        person_id_text.setForeground(new java.awt.Color(0, 0, 0));
+
+        jLabel13.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel13.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel13.setText("GET BOOK ID");
+
+        get_book_id.setBackground(new java.awt.Color(255, 255, 255));
+        get_book_id.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        get_book_id.setForeground(new java.awt.Color(0, 0, 0));
+        get_book_id.setText("GET BOOK ID");
 
         javax.swing.GroupLayout get_bookLayout = new javax.swing.GroupLayout(get_book);
         get_book.setLayout(get_bookLayout);
         get_bookLayout.setHorizontalGroup(
             get_bookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(get_bookLayout.createSequentialGroup()
-                .addGap(127, 127, 127)
-                .addGroup(get_bookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(142, 142, 142)
+                .addGroup(get_bookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(get_bookLayout.createSequentialGroup()
                         .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(29, 29, 29)
-                        .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(get_serch, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(get_bookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(get_bookLayout.createSequentialGroup()
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(person_id_text))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, get_bookLayout.createSequentialGroup()
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(book_id_text, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(get_bookLayout.createSequentialGroup()
+                        .addGroup(get_bookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton12, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE))
+                        .addGroup(get_bookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(get_bookLayout.createSequentialGroup()
+                                .addGap(58, 58, 58)
+                                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(61, 61, 61)
+                                .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(get_bookLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(get_book_id, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addContainerGap(157, Short.MAX_VALUE))
         );
         get_bookLayout.setVerticalGroup(
             get_bookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(get_bookLayout.createSequentialGroup()
-                .addGap(80, 80, 80)
+                .addGap(30, 30, 30)
                 .addGroup(get_bookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton10)
-                    .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                    .addComponent(get_serch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(156, 156, 156))
+                .addGap(24, 24, 24)
+                .addGroup(get_bookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(book_id_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(get_bookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(person_id_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
+                .addGroup(get_bookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(get_book_id))
+                .addGap(18, 18, 18)
+                .addGroup(get_bookLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(30, 30, 30))
         );
 
         security.setBackground(new java.awt.Color(165, 186, 206));
@@ -933,7 +1379,8 @@ public final class setting extends javax.swing.JFrame {
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        pack();
+        setSize(new java.awt.Dimension(960, 597));
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
@@ -958,9 +1405,9 @@ public final class setting extends javax.swing.JFrame {
         book_table_load();
     }//GEN-LAST:event_book_storeMouseClicked
 
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton9ActionPerformed
+    private void get_book_serchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_get_book_serchActionPerformed
+        book_hand_over_search();
+    }//GEN-LAST:event_get_book_serchActionPerformed
 
     private void handoverMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_handoverMouseClicked
         persondata.setVisible(false);
@@ -968,6 +1415,7 @@ public final class setting extends javax.swing.JFrame {
         bookstore.setVisible(false);
         get_book.setVisible(false);
         security.setVisible(false);
+        book_hand_over();
     }//GEN-LAST:event_handoverMouseClicked
 
     private void secueMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secueMouseClicked
@@ -984,11 +1432,12 @@ public final class setting extends javax.swing.JFrame {
         bookstore.setVisible(false);
         get_book.setVisible(true);
         security.setVisible(false);
+        get_book();
     }//GEN-LAST:event_get__bookMouseClicked
 
-    private void jTextField10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField10ActionPerformed
+    private void get_serchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_get_serchActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField10ActionPerformed
+    }//GEN-LAST:event_get_serchActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         p_delete();
@@ -1023,6 +1472,98 @@ public final class setting extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         P_search();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void table_book_storeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_table_book_storeKeyReleased
+        book_table_data();
+    }//GEN-LAST:event_table_book_storeKeyReleased
+
+    private void table_book_storeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_book_storeMouseClicked
+        book_table_data();
+    }//GEN-LAST:event_table_book_storeMouseClicked
+
+    private void b_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_updateActionPerformed
+        b_update();
+        book_table_load();
+    }//GEN-LAST:event_b_updateActionPerformed
+
+    private void clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearActionPerformed
+        b_author.setText("");
+        b_id.setText("");
+        b_name.setText("");
+    }//GEN-LAST:event_clearActionPerformed
+
+    private void b_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_deleteActionPerformed
+        b_delete();
+        book_table_load();
+    }//GEN-LAST:event_b_deleteActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        b_search();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+        new main_menu().setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jLabel1MouseClicked
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        get_book_search();
+    }//GEN-LAST:event_jButton10ActionPerformed
+
+    private void h_serchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_h_serchActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_h_serchActionPerformed
+
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+        get_serch.setText("");
+        get_book_id.setText("");
+        person_id_text.setText("");
+        book_id_text.setText("");
+        get_book();
+    }//GEN-LAST:event_jButton12ActionPerformed
+
+    private void get_book_tableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_get_book_tableKeyReleased
+        get_book_select();
+    }//GEN-LAST:event_get_book_tableKeyReleased
+
+    private void get_book_tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_get_book_tableMouseClicked
+        get_book_select();
+    }//GEN-LAST:event_get_book_tableMouseClicked
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        get_book_update();
+        get_book();
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        get_book_delete();
+        get_book();
+    }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void hand_over_tableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_hand_over_tableKeyReleased
+        hand_over_select();
+    }//GEN-LAST:event_hand_over_tableKeyReleased
+
+    private void hand_over_tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_hand_over_tableMouseClicked
+        hand_over_select();
+    }//GEN-LAST:event_hand_over_tableMouseClicked
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        r_id.setText("");
+        get_id_text.setText("");
+        h_serch.setText("");
+        book_hand_over();
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        hand_over_update();
+        book_hand_over();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        hand_over_delete();
+        book_hand_over();
+    }//GEN-LAST:event_jButton6ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1059,18 +1600,34 @@ public final class setting extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel account;
+    private javax.swing.JTextField b_author;
+    private javax.swing.JButton b_delete;
     private javax.swing.JLabel b_id;
+    private javax.swing.JTextField b_name;
+    private javax.swing.JButton b_update;
+    private javax.swing.JTextField book_id_text;
+    private javax.swing.JTextField book_search;
     private javax.swing.JLabel book_store;
     private javax.swing.JPanel bookhandover;
     private javax.swing.JPanel bookstore;
+    private javax.swing.JButton clear;
     private javax.swing.JTextField email;
     private javax.swing.JTextField f_name;
     private javax.swing.JLabel get__book;
     private javax.swing.JPanel get_book;
+    private javax.swing.JLabel get_book_id;
+    private javax.swing.JButton get_book_serch;
+    private javax.swing.JTable get_book_table;
+    private javax.swing.JTextField get_id_text;
+    private javax.swing.JTextField get_serch;
+    private javax.swing.JTextField h_serch;
+    private javax.swing.JTable hand_over_table;
     private javax.swing.JLabel handover;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
+    private javax.swing.JButton jButton12;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
@@ -1082,12 +1639,17 @@ public final class setting extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -1098,15 +1660,9 @@ public final class setting extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField11;
     private javax.swing.JTextField jTextField12;
     private javax.swing.JTextField jTextField13;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField8;
-    private javax.swing.JTextField jTextField9;
     private javax.swing.JTextField l_name;
     private javax.swing.JPanel main_pannel;
     private javax.swing.JPanel p;
@@ -1114,8 +1670,9 @@ public final class setting extends javax.swing.JFrame {
     private javax.swing.JLabel p_id;
     private javax.swing.JTextField p_serachbox;
     private javax.swing.JTextField password;
-    private javax.swing.JTable person_table;
+    private javax.swing.JTextField person_id_text;
     private javax.swing.JPanel persondata;
+    private javax.swing.JLabel r_id;
     private javax.swing.JLabel secue;
     private javax.swing.JPanel security;
     private javax.swing.JTable table1;
