@@ -53,7 +53,7 @@ public class hand_over extends javax.swing.JFrame {
         String person_id = hand_over_table.getValueAt(pdata, 2).toString();
 
         b_id.setText(book_id);
-        g_id.setText(get_id);
+        getbook_id.setText(get_id);
         p_id.setText(person_id);
     }
 
@@ -64,6 +64,7 @@ public class hand_over extends javax.swing.JFrame {
             String sql = "SELECT * FROM getbook WHERE getbook_id LIKE '%" + searchdata + "%' or book_id LIKE '%" + searchdata + "%' or person_id LIKE '%" + searchdata + "%'";
             prt = con.prepareStatement(sql);
             rs = (Resultset) prt.executeQuery();
+            System.out.println();
             hand_over_table.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -71,13 +72,13 @@ public class hand_over extends javax.swing.JFrame {
     }
 
     public void send_hand_over_data() {
-        String g_data = g_id.getText();
+        String g_data = getbook_id.getText();
 
         try {
             String sql = "INSERT INTO `hand_over`(`get_id`) VALUES ('" + g_data + "')";
             prt = con.prepareStatement(sql);
             prt.execute();
-            JOptionPane.showMessageDialog(null, "Insert succesfully");
+            //JOptionPane.showMessageDialog(null, "Insert succesfully");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
@@ -87,12 +88,13 @@ public class hand_over extends javax.swing.JFrame {
         int check = JOptionPane.showConfirmDialog(null, "confirm hand over");
 
         try {
-            String id = g_id.getText();
+            String id = getbook_id.getText();
             if (check == 0) {
-                String sql = "DELETE FROM getbook WHERE getbook_id='" + g_id + "'";
+                String sql = "DELETE FROM getbook WHERE getbook_id='" + id + "'";
                 prt = con.prepareStatement(sql);
                 prt.execute();
                 //JOptionPane.showMessageDialog(null, "deleted");
+                send_hand_over_data();
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -116,7 +118,7 @@ public class hand_over extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         b_id = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        g_id = new javax.swing.JTextField();
+        getbook_id = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         p_id = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
@@ -186,11 +188,11 @@ public class hand_over extends javax.swing.JFrame {
         jLabel3.setText("GET ID");
         jLabel3.setToolTipText("");
 
-        g_id.setBackground(new java.awt.Color(204, 204, 204));
-        g_id.setForeground(new java.awt.Color(0, 0, 0));
-        g_id.addActionListener(new java.awt.event.ActionListener() {
+        getbook_id.setBackground(new java.awt.Color(204, 204, 204));
+        getbook_id.setForeground(new java.awt.Color(0, 0, 0));
+        getbook_id.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                g_idActionPerformed(evt);
+                getbook_idActionPerformed(evt);
             }
         });
 
@@ -245,7 +247,7 @@ public class hand_over extends javax.swing.JFrame {
                         .addGroup(jPanel2Layout.createSequentialGroup()
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(g_id, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(getbook_id, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel2Layout.createSequentialGroup()
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -277,7 +279,7 @@ public class hand_over extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(g_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(getbook_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -315,9 +317,9 @@ public class hand_over extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_p_idActionPerformed
 
-    private void g_idActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_g_idActionPerformed
+    private void getbook_idActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getbook_idActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_g_idActionPerformed
+    }//GEN-LAST:event_getbook_idActionPerformed
 
     private void b_idActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_idActionPerformed
         // TODO add your handling code here:
@@ -342,10 +344,10 @@ public class hand_over extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         delete_get_data();
-        send_hand_over_data();
+        //send_hand_over_data();
         book_hand_over();
         b_id.setText("");
-        g_id.setText("");
+        getbook_id.setText("");
         p_id.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -386,8 +388,8 @@ public class hand_over extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField b_id;
-    private javax.swing.JTextField g_id;
     private javax.swing.JTextField get_serch;
+    private javax.swing.JTextField getbook_id;
     private javax.swing.JTable hand_over_table;
     private javax.swing.JLabel home;
     private javax.swing.JButton jButton1;

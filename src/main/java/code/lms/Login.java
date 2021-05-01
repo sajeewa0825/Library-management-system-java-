@@ -5,6 +5,12 @@
  */
 package code.lms;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import static javax.swing.text.html.HTML.Tag.P;
 
@@ -19,11 +25,12 @@ public class Login extends javax.swing.JFrame {
      */
     public Login() {
         initComponents();
+       
     }
 
-    public void login() {
-        String u_name = "user";
-        String p_word = "123";
+    public void login(String use, String pass) {
+        String u_name = use;
+        String p_word = pass;
         String u = username.getText();
         String p = password.getText();
 
@@ -34,6 +41,25 @@ public class Login extends javax.swing.JFrame {
             username.setText("");
             password.setText("");
             JOptionPane.showMessageDialog(null, "User name or Password incorrect");
+        }
+    }
+
+    public void logindata() {
+        Connection con = DBconnect.connect();
+        PreparedStatement pr;
+
+        try {
+            pr= con.prepareStatement("SELECT * FROM password WHERE 1");
+            ResultSet result = pr.executeQuery();
+            while (result.next()) {
+                //System.out.println("id: " + result.getString(1));
+                String ldata =result.getString(1);
+                String lname =result.getString(2);
+                login(ldata, lname);
+                System.out.println("code.lms.Login.logindata()"+ ldata + "  " + lname);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(check.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -116,7 +142,7 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnloginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnloginActionPerformed
-        login();
+        logindata();
     }//GEN-LAST:event_btnloginActionPerformed
 
     /**
