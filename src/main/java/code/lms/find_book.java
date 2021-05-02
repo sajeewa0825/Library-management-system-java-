@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import net.proteanit.sql.DbUtils;
 
@@ -46,7 +48,7 @@ public class find_book extends javax.swing.JFrame {
 
     public void person_table_load() {
         try {
-            String sql = "SELECT `id`, `first_name` FROM `person`";
+            String sql = "SELECT id, first_name, last_name FROM person WHERE 1";
             prt = con.prepareStatement(sql);
             rs = (Resultset) prt.executeQuery();
             persontable.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
@@ -93,7 +95,7 @@ public class find_book extends javax.swing.JFrame {
     public void person_serch() {
         String searchdata = p_search.getText();
         try {
-            String sql = "SELECT * FROM person WHERE first_name LIKE '%" + searchdata + "%' or id LIKE '%" + searchdata + "%' or last_name LIKE '%" + searchdata + "%' or email LIKE '%" + searchdata + "%'  ";
+            String sql = "SELECT id, first_name, last_name FROM person WHERE first_name LIKE '%" + searchdata + "%' or id LIKE '%" + searchdata + "%' or last_name LIKE '%" + searchdata + "%' or email LIKE '%" + searchdata + "%'  ";
             prt = con.prepareStatement(sql);
             rs = (Resultset) prt.executeQuery();
             persontable.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));
@@ -108,13 +110,45 @@ public class find_book extends javax.swing.JFrame {
         person_id = p_id.getText();
 
         try {
-            String sql = "INSERT INTO `getbook`( `book_id`, `person_id`) VALUES ('" + book_id + "','" +person_id + "')";
+            String sql = "INSERT INTO `getbook`( `book_id`, `person_id`) VALUES ('" + book_id + "','" + person_id + "')";
             prt = con.prepareStatement(sql);
             prt.execute();
             JOptionPane.showMessageDialog(null, "Get Book succesfully");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
+    }
+
+    public void get_table_data() {
+        int bdata = booktable.getSelectedRow();
+        String bid = booktable.getValueAt(bdata, 0).toString();
+        String data2="0";
+        try {
+            prt = con.prepareStatement("SELECT * FROM getbook WHERE book_id LIKE '%" + bid + "%' ");
+            ResultSet result = prt.executeQuery();
+            while (result.next()) {
+                data2 = result.getString(2);
+            }
+            check_book(data2);
+        } catch (SQLException ex) {
+            Logger.getLogger(check.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public void check_book(String data1) {
+        int bdata = booktable.getSelectedRow();
+        String bid = booktable.getValueAt(bdata, 0).toString();
+
+        System.out.println("data " + bid);
+        System.out.println("data " + data1);
+
+        if (bid.equals(data1)) {
+            JOptionPane.showMessageDialog(null, "book allredy get ");
+        } else {
+            getbook();
+        }
+
     }
 
     /**
@@ -363,7 +397,7 @@ public class find_book extends javax.swing.JFrame {
     }//GEN-LAST:event_p_serchbtnActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        getbook();
+        get_table_data();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
