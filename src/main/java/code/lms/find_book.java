@@ -34,10 +34,10 @@ public class find_book extends javax.swing.JFrame {
         book_table_load();
         person_table_load();
     }
-
+    
     public void book_table_load() {
         try {
-            String sql = "SELECT `book_id`, `book_name`, `book_author` FROM `bookstore`";
+            String sql = "SELECT `book_id` as ID, `book_name` as Name, `book_author` as Autor FROM `bookstore`";
             prt = con.prepareStatement(sql);
             rs = (Resultset) prt.executeQuery();
             booktable.setModel(DbUtils.resultSetToTableModel((ResultSet) rs));

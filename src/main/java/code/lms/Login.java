@@ -115,7 +115,7 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e);
         }
     }
-    String f_name = null;
+
     public void user_password() {
 
         String user_data = username.getText();
@@ -125,18 +125,14 @@ public class Login extends javax.swing.JFrame {
         String id = null;
 
         try {
-            prt = con.prepareStatement("SELECT email, first_name, id  FROM person WHERE email LIKE '" + user_data + "'");
+            prt = con.prepareStatement("SELECT email, id  FROM person WHERE email LIKE '" + user_data + "'");
             ResultSet result = prt.executeQuery();
             while (result.next()) {
                 email = result.getString(1);
-                f_name = result.getString(2);
-                id = result.getString(3);
-                
-                System.out.println(email + " " + f_name + " " + id);
-                password_username_check(email);
-                sendid(id);
-                //sendname(f_name);
-                
+                id = result.getString(2);
+
+                password_username_check(email,id);
+
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex);
@@ -147,22 +143,22 @@ public class Login extends javax.swing.JFrame {
         }
     }
 
-    public void password_username_check(String pass_email) {
+    public void password_username_check(String pass_email, String id) {
         String p_word = null;
         String p_word2 = password.getText();
+        
         try {
             prt = con.prepareStatement("SELECT password  FROM person WHERE email LIKE '" + pass_email + "'");
             ResultSet result = prt.executeQuery();
             while (result.next()) {
                 p_word = result.getString(1);
-                System.out.println("password" + p_word);
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex);
         }
-
+  
         if (p_word2.equals(p_word)) {
-            new user_acces(f_name).setVisible(true);
+            new user_acces(id).setVisible(true);
             this.setVisible(false);
         } else {
             JOptionPane.showMessageDialog(null, "Your Email or Password Incoorect");
@@ -170,17 +166,6 @@ public class Login extends javax.swing.JFrame {
 
     }
 
-    
-    
-//    public String sendname(){
-//        String name = f_name;
-//        return name;
-//        
-//    }
-    
-    public String sendid( String id){
-        return id;
-    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -216,6 +201,7 @@ public class Login extends javax.swing.JFrame {
         btnlogin = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         label_Forget = new javax.swing.JLabel();
+        label_Forget1 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -388,14 +374,25 @@ public class Login extends javax.swing.JFrame {
         jLabel4.setIcon(new javax.swing.ImageIcon("E:\\java_test\\LMS\\src\\main\\java\\imsges\\login7.png")); // NOI18N
         login.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 10, 260, 100));
 
+        label_Forget.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         label_Forget.setForeground(new java.awt.Color(0, 204, 0));
-        label_Forget.setText("FORGET PASSWORD");
+        label_Forget.setText("REGISTER");
         label_Forget.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 label_ForgetMouseClicked(evt);
             }
         });
-        login.add(label_Forget, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 290, 130, -1));
+        login.add(label_Forget, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 290, 130, -1));
+
+        label_Forget1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        label_Forget1.setForeground(new java.awt.Color(0, 204, 0));
+        label_Forget1.setText("FORGET");
+        label_Forget1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                label_Forget1MouseClicked(evt);
+            }
+        });
+        login.add(label_Forget1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 290, 70, -1));
 
         jPanel1.add(login, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 50, 360, 360));
 
@@ -420,9 +417,8 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_n_userActionPerformed
 
     private void label_ForgetMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_label_ForgetMouseClicked
-        login.setVisible(false);
-        foraget.setVisible(false);
-        secue_q.setVisible(true);
+        new signup().setVisible(true);
+        this.setVisible(false);
     }//GEN-LAST:event_label_ForgetMouseClicked
 
     private void sq2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sq2ActionPerformed
@@ -451,6 +447,10 @@ public class Login extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         change_password();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void label_Forget1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_label_Forget1MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_label_Forget1MouseClicked
 
     /**
      * @param args the command line arguments
@@ -502,6 +502,7 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel label_Forget;
+    private javax.swing.JLabel label_Forget1;
     private javax.swing.JPanel login;
     private javax.swing.JLabel n_pword;
     private javax.swing.JPasswordField n_pword1;

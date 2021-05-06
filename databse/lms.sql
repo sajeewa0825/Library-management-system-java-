@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 01, 2021 at 06:14 PM
+-- Generation Time: May 06, 2021 at 07:08 PM
 -- Server version: 10.4.18-MariaDB
 -- PHP Version: 8.0.3
 
@@ -41,7 +41,7 @@ CREATE TABLE `bookstore` (
 INSERT INTO `bookstore` (`book_id`, `book_name`, `book_author`, `date`) VALUES
 (1, 'madolduwa', 'matin', '2021-04-29 14:30:02.015307'),
 (2, 'wessa', 'sarath', '2021-04-29 14:47:12.338899'),
-(3, 'kaluwara', 'rathnayaka', '2021-04-29 14:47:39.587747'),
+(3, 'kalu', 'rathnayaka', '2021-04-29 14:47:39.587747'),
 (4, 'kadu', 'disa sekara', '2021-04-29 14:47:56.580731'),
 (5, 'kaluwara', 'mudi', '2021-04-29 14:48:10.983094'),
 (6, 'hima wessa', 'mahagama', '2021-04-29 14:49:09.935426'),
@@ -67,7 +67,7 @@ CREATE TABLE `getbook` (
 INSERT INTO `getbook` (`getbook_id`, `book_id`, `person_id`, `date`) VALUES
 (1, 1, 1, '2021-04-29 14:37:47.834464'),
 (6, 4, 5, '2021-04-30 18:15:15.954642'),
-(7, 5, 3, '2021-04-30 18:15:20.403663');
+(11, 2, 2, '2021-05-06 16:30:37.761893');
 
 -- --------------------------------------------------------
 
@@ -78,6 +78,7 @@ INSERT INTO `getbook` (`getbook_id`, `book_id`, `person_id`, `date`) VALUES
 CREATE TABLE `hand_over` (
   `return_id` int(10) NOT NULL,
   `get_id` int(10) NOT NULL,
+  `p_id` int(10) DEFAULT NULL,
   `date` timestamp(6) NOT NULL DEFAULT current_timestamp(6)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -85,18 +86,9 @@ CREATE TABLE `hand_over` (
 -- Dumping data for table `hand_over`
 --
 
-INSERT INTO `hand_over` (`return_id`, `get_id`, `date`) VALUES
-(1, 1, '2021-04-29 14:40:11.299969'),
-(2, 2, '2021-04-29 14:51:43.894988'),
-(3, 4, '2021-04-29 14:51:51.658235'),
-(4, 3, '2021-04-29 14:52:05.820055'),
-(5, 5, '2021-04-30 06:09:34.306751'),
-(6, 5, '2021-04-30 17:41:37.738758'),
-(7, 3, '2021-04-30 17:48:25.372539'),
-(8, 2, '2021-04-30 18:04:33.059568'),
-(9, 2, '2021-04-30 18:04:55.133377'),
-(10, 2, '2021-04-30 18:06:50.806939'),
-(11, 8, '2021-04-30 18:15:37.504531');
+INSERT INTO `hand_over` (`return_id`, `get_id`, `p_id`, `date`) VALUES
+(66, 10, 2, '2021-05-06 16:28:40.842856'),
+(67, 12, 2, '2021-05-06 16:31:23.204094');
 
 -- --------------------------------------------------------
 
@@ -137,10 +129,12 @@ CREATE TABLE `person` (
 
 INSERT INTO `person` (`id`, `first_name`, `last_name`, `email`, `password`, `date`) VALUES
 (1, 'sunethma', 'sethmini', 'su@gmal.com', '1234', '2021-04-29 14:34:24.257738'),
-(2, 'upali', 'werasekara', 'upali@wirasekara', '4561', '2021-04-29 14:49:43.003904'),
-(3, 'rathna', 'werasekara', 'rathna@gmail.com', '4561', '2021-04-29 14:50:13.051930'),
+(2, 'upali', 'werathunga', 'upali@gmail.com', '123', '2021-04-29 14:49:43.003904'),
+(3, 'rathna', 'werasekara', 'com', '456', '2021-04-29 14:50:13.051930'),
 (4, 'amali', 'mudi', 'amali@gmail.com', 'dswa', '2021-04-29 14:50:36.646912'),
-(5, 'sunethma', 'hodai', 'sunethma@gmail.com12344', 'asdeee', '2021-04-30 05:53:52.830346');
+(5, 'amara', 'hhh', 'sunethma@gmail.com12344', 'asdeee', '2021-04-30 05:53:52.830346'),
+(6, 'kumudu', 'kumar', 'kumudu@hotmail.com', '123', '2021-05-06 16:37:48.505497'),
+(7, 'mali', 'mal', 'mal@gmail.com', '1234', '2021-05-06 16:48:54.612025');
 
 --
 -- Indexes for dumped tables
@@ -164,7 +158,8 @@ ALTER TABLE `getbook`
 -- Indexes for table `hand_over`
 --
 ALTER TABLE `hand_over`
-  ADD PRIMARY KEY (`return_id`);
+  ADD PRIMARY KEY (`return_id`),
+  ADD KEY `p_id` (`p_id`);
 
 --
 -- Indexes for table `password`
@@ -192,19 +187,19 @@ ALTER TABLE `bookstore`
 -- AUTO_INCREMENT for table `getbook`
 --
 ALTER TABLE `getbook`
-  MODIFY `getbook_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `getbook_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `hand_over`
 --
 ALTER TABLE `hand_over`
-  MODIFY `return_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `return_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `person`
 --
 ALTER TABLE `person`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
@@ -216,6 +211,12 @@ ALTER TABLE `person`
 ALTER TABLE `getbook`
   ADD CONSTRAINT `getbook_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `person` (`id`),
   ADD CONSTRAINT `getbook_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `bookstore` (`book_id`);
+
+--
+-- Constraints for table `hand_over`
+--
+ALTER TABLE `hand_over`
+  ADD CONSTRAINT `hand_over_ibfk_1` FOREIGN KEY (`p_id`) REFERENCES `person` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

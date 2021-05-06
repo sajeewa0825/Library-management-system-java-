@@ -22,10 +22,8 @@ public class signup extends javax.swing.JFrame {
         initComponents();
         connect = DBconnect.connect();
     }
-        Connection connect = null;
+    Connection connect = null;
     PreparedStatement prt = null;
-
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -45,8 +43,6 @@ public class signup extends javax.swing.JFrame {
         jCheckBox1 = new javax.swing.JCheckBox();
         create_account = new javax.swing.JButton();
         login = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -104,24 +100,6 @@ public class signup extends javax.swing.JFrame {
         });
         jPanel1.add(login, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 740, 50, 20));
 
-        jLabel2.setIcon(new javax.swing.ImageIcon("E:\\java_test\\LMS\\src\\main\\java\\imsges\\home1.png")); // NOI18N
-        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel2MouseClicked(evt);
-            }
-        });
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 50, 70));
-
-        jLabel3.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel3.setText("HOME");
-        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel3MouseClicked(evt);
-            }
-        });
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 60, -1, -1));
-
         jLabel1.setBackground(new java.awt.Color(255, 255, 255));
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setIcon(new javax.swing.ImageIcon("E:\\java_test\\LMS\\src\\main\\java\\imsges\\signup_4.png")); // NOI18N
@@ -138,31 +116,32 @@ public class signup extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_loginMouseClicked
 
-    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-        new main_menu().setVisible(true);
-        this.setVisible(false);
-    }//GEN-LAST:event_jLabel3MouseClicked
-
-    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
-        new main_menu().setVisible(true);
-        this.setVisible(false);
-    }//GEN-LAST:event_jLabel2MouseClicked
-
     private void create_accountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_create_accountActionPerformed
-        String firstname, lastname, email, password;
+        String firstname, lastname, email, password, password1;
         firstname = f_name.getText();
         lastname = l_name.getText();
         email = this.email.getText();
         password = this.password.getText();
+        password1 = this.password1.getText();
 
-        try {
-            String sql = "INSERT INTO person(first_name, last_name,email,password) VALUES('" + firstname + "','" +lastname + "','" + email + "','" +password+ "')";
-            prt = connect.prepareStatement(sql);
-            prt.execute();
-            JOptionPane.showMessageDialog(null, "Insert succesfully");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
+        if (password.equals(password1)) {
+            try {
+                String sql = "INSERT INTO person(first_name, last_name,email,password) VALUES('" + firstname + "','" + lastname + "','" + email + "','" + password + "')";
+                prt = connect.prepareStatement(sql);
+                prt.execute();
+                JOptionPane.showMessageDialog(null, "Insert succesfully");
+                f_name.setText("");
+                l_name.setText("");
+                this.email.setText("");
+                this.password.setText("");
+                this.password1.setText("");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "password not equals");
         }
+
 
     }//GEN-LAST:event_create_accountActionPerformed
 
@@ -207,8 +186,6 @@ public class signup extends javax.swing.JFrame {
     private javax.swing.JTextField f_name;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField l_name;
     private javax.swing.JLabel login;

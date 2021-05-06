@@ -75,7 +75,7 @@ public class hand_over extends javax.swing.JFrame {
         String g_data = getbook_id.getText();
 
         try {
-            String sql = "INSERT INTO `hand_over`(`get_id`) VALUES ('" + g_data + "')";
+            String sql = "INSERT INTO`hand_over`(`get_id`) VALUES ('" + g_data + "')";
             prt = con.prepareStatement(sql);
             prt.execute();
             //JOptionPane.showMessageDialog(null, "Insert succesfully");
