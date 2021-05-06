@@ -24,8 +24,12 @@ public class Login extends javax.swing.JFrame {
     /**
      * Creates new form Login
      */
+    Connection con;
+    PreparedStatement prt;
+
     public Login() {
         initComponents();
+        con = DBconnect.connect();
         login.setVisible(true);
         foraget.setVisible(false);
         secue_q.setVisible(false);
@@ -42,9 +46,7 @@ public class Login extends javax.swing.JFrame {
             new main_menu().setVisible(true);
             this.setVisible(false);
         } else {
-            username.setText("");
-            password.setText("");
-            JOptionPane.showMessageDialog(null, "User name or Password incorrect");
+            user_password();
         }
     }
 
@@ -61,7 +63,7 @@ public class Login extends javax.swing.JFrame {
                 login(ldata, lname);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(check.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex);
         }
     }
 
@@ -100,8 +102,6 @@ public class Login extends javax.swing.JFrame {
     }
 
     public void password_update() {
-        Connection con = DBconnect.connect();
-        PreparedStatement prt;
 
         String nuser = this.n_user.getText();
         String password1 = n_pword1.getText();
@@ -115,7 +115,72 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e);
         }
     }
+    String f_name = null;
+    public void user_password() {
 
+        String user_data = username.getText();
+        System.out.println("get text");
+        String email = "0";
+        String f_name = null;
+        String id = null;
+
+        try {
+            prt = con.prepareStatement("SELECT email, first_name, id  FROM person WHERE email LIKE '" + user_data + "'");
+            ResultSet result = prt.executeQuery();
+            while (result.next()) {
+                email = result.getString(1);
+                f_name = result.getString(2);
+                id = result.getString(3);
+                
+                System.out.println(email + " " + f_name + " " + id);
+                password_username_check(email);
+                sendid(id);
+                //sendname(f_name);
+                
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex);
+        }
+
+        if (email == "0") {
+            JOptionPane.showMessageDialog(null, "User Name or password incorrect");
+        }
+    }
+
+    public void password_username_check(String pass_email) {
+        String p_word = null;
+        String p_word2 = password.getText();
+        try {
+            prt = con.prepareStatement("SELECT password  FROM person WHERE email LIKE '" + pass_email + "'");
+            ResultSet result = prt.executeQuery();
+            while (result.next()) {
+                p_word = result.getString(1);
+                System.out.println("password" + p_word);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex);
+        }
+
+        if (p_word2.equals(p_word)) {
+            new user_acces(f_name).setVisible(true);
+            this.setVisible(false);
+        } else {
+            JOptionPane.showMessageDialog(null, "Your Email or Password Incoorect");
+        }
+
+    }
+
+    
+    
+//    public String sendname(){
+//        String name = f_name;
+//        return name;
+//        
+//    }
+    
+    public String sendid( String id){
+        return id;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -347,6 +412,7 @@ public class Login extends javax.swing.JFrame {
 
     private void btnloginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnloginActionPerformed
         logindata();
+        // user_password();
     }//GEN-LAST:event_btnloginActionPerformed
 
     private void n_userActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_n_userActionPerformed

@@ -131,7 +131,7 @@ public class find_book extends javax.swing.JFrame {
             }
             check_book(data2);
         } catch (SQLException ex) {
-            Logger.getLogger(check.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex);
         }
 
     }

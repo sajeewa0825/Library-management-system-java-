@@ -323,7 +323,7 @@ public final class setting extends javax.swing.JFrame {
                 password_check(ldata, lname);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(check.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex);
         }
     }
 
