@@ -11,6 +11,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import net.proteanit.sql.DbUtils;
@@ -48,6 +52,7 @@ public class user_acces extends javax.swing.JFrame {
         person_data();
         book_table_load();
         user_return_book_table();
+        return_date_check();
     }
 
     public void setColor(JPanel p) {
@@ -58,7 +63,6 @@ public class user_acces extends javax.swing.JFrame {
         p1.setBackground(new Color(52, 57, 87));
     }
 
-    
     public void set_toolbarname(String name, String id) {
         //String name = loginobject.sendname(null);
         name_label.setText(name);
@@ -74,13 +78,15 @@ public class user_acces extends javax.swing.JFrame {
 
         try {
             System.out.println("run try catch " + u_id);
-            prt = con.prepareStatement("SELECT  first_name, last_name, email, password  FROM person WHERE id LIKE '" + u_id + "'");
+            prt = con.prepareStatement("SELECT  first_name, last_name, email, password,date  FROM person WHERE id LIKE '" + u_id + "'");
             ResultSet result = prt.executeQuery();
             while (result.next()) {
                 String f_name1 = result.getString(1);
                 String l_name1 = result.getString(2);
                 String email1 = result.getString(3);
                 String password1 = result.getString(4);
+               // String date = result.getString(5);
+               // System.out.println("date " + date);
 
                 name_label.setText(f_name1);
                 this.f_name.setText(f_name1);
@@ -277,7 +283,7 @@ public class user_acces extends javax.swing.JFrame {
     public void send_return_data() {
         int pdata = return_table.getSelectedRow();
 
-        String r_id =return_table.getValueAt(pdata, 0).toString();
+        String r_id = return_table.getValueAt(pdata, 0).toString();
         String person_id = id_label.getText();
 
         try {
@@ -297,7 +303,7 @@ public class user_acces extends javax.swing.JFrame {
         int pdata = return_table.getSelectedRow();
         String id = return_table.getValueAt(pdata, 0).toString();
         try {
-            
+
             if (check == 0) {
                 String sql = "DELETE FROM getbook WHERE getbook_id='" + id + "'";
                 prt = con.prepareStatement(sql);
@@ -305,6 +311,43 @@ public class user_acces extends javax.swing.JFrame {
                 //JOptionPane.showMessageDialog(null, "deleted");
                 send_return_data();
             }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    public void return_date_check() {
+        String person_id = id_label.getText();
+        String getbookid = null, bookid=null, date = null;
+
+        try {
+            prt = con.prepareStatement("SELECT getbook_id , book_id, date FROM getbook WHERE person_id LIKE '%" + person_id + "%'");
+            ResultSet result = prt.executeQuery();
+            while (result.next()) {
+                getbookid = result.getString(1);
+                bookid = result.getString(2);
+                date = result.getString(3);
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex);
+        }
+
+        ZoneId z = ZoneId.of("Asia/Colombo");
+        LocalDate today = LocalDate.now(z);
+
+        String current_date = today.toString();
+
+        SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Date date1 = myFormat.parse(date);
+            Date date2 = myFormat.parse(current_date);
+            
+            long dif = date2.getTime() - date1.getTime();
+            int daybetweendate = (int) (dif / (1000 * 60 * 60 * 24));
+            String countdate = String.valueOf(daybetweendate);
+            returnbook.setText(countdate);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
@@ -375,6 +418,7 @@ public class user_acces extends javax.swing.JFrame {
         jLabel15 = new javax.swing.JLabel();
         name_label = new javax.swing.JLabel();
         id_label = new javax.swing.JLabel();
+        returnbook = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(235, 236, 241));
@@ -1114,12 +1158,19 @@ public class user_acces extends javax.swing.JFrame {
         id_label.setText("ID");
         id_label.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
+        returnbook.setBackground(new java.awt.Color(255, 255, 255));
+        returnbook.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        returnbook.setForeground(new java.awt.Color(255, 0, 51));
+        returnbook.setText("jLabel5");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(597, Short.MAX_VALUE)
+                .addGap(271, 271, 271)
+                .addComponent(returnbook, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 218, Short.MAX_VALUE)
                 .addComponent(name_label, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(id_label, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1132,7 +1183,8 @@ public class user_acces extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
                 .addComponent(id_label)
-                .addComponent(name_label))
+                .addComponent(name_label)
+                .addComponent(returnbook))
         );
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 0, 800, 40));
@@ -1265,7 +1317,7 @@ public class user_acces extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void profile2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profile2MouseClicked
-       System.exit(0);
+        System.exit(0);
     }//GEN-LAST:event_profile2MouseClicked
 
     private void profile2MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profile2MouseEntered
@@ -1277,7 +1329,7 @@ public class user_acces extends javax.swing.JFrame {
     }//GEN-LAST:event_profile2MouseExited
 
     private void exit_pannelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exit_pannelMouseClicked
-       System.exit(0);
+        System.exit(0);
     }//GEN-LAST:event_exit_pannelMouseClicked
 
     private void exit_pannelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exit_pannelMouseEntered
@@ -1375,6 +1427,7 @@ public class user_acces extends javax.swing.JFrame {
     private javax.swing.JLabel return_book;
     private javax.swing.JPanel return_pannel;
     private javax.swing.JTable return_table;
+    private javax.swing.JLabel returnbook;
     private javax.swing.JTextField search_box;
     private javax.swing.JTextField search_box1;
     private javax.swing.JLabel select_book_name;
