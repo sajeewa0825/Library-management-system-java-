@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.MessagingException;
 import javax.swing.JOptionPane;
 import static javax.swing.text.html.HTML.Tag.P;
 
@@ -158,7 +159,11 @@ public class Login extends javax.swing.JFrame {
         }
   
         if (p_word2.equals(p_word)) {
-            new user_acces(id).setVisible(true);
+            try {
+                new user_acces(id).setVisible(true);
+            } catch (MessagingException ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            }
             this.setVisible(false);
         } else {
             JOptionPane.showMessageDialog(null, "Your Email or Password Incoorect");

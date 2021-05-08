@@ -11,10 +11,23 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import net.proteanit.sql.DbUtils;
@@ -31,6 +44,10 @@ public class user_acces extends javax.swing.JFrame {
     Connection con;
     PreparedStatement prt;
     Resultset rs = null;
+    ZoneId z = ZoneId.of("Asia/Colombo");
+    LocalDate today = LocalDate.now(z);
+    String current_date = today.toString();
+    SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public user_acces() {
         // con = DBconnect.connect();
@@ -42,7 +59,7 @@ public class user_acces extends javax.swing.JFrame {
 
     }
 
-    public user_acces(String id) {
+    public user_acces(String id) throws MessagingException {
         con = DBconnect.connect();
         initComponents();
         id_label.setText(id);
@@ -53,6 +70,7 @@ public class user_acces extends javax.swing.JFrame {
         book_table_load();
         user_return_book_table();
         return_date_check();
+
     }
 
     public void setColor(JPanel p) {
@@ -85,8 +103,8 @@ public class user_acces extends javax.swing.JFrame {
                 String l_name1 = result.getString(2);
                 String email1 = result.getString(3);
                 String password1 = result.getString(4);
-               // String date = result.getString(5);
-               // System.out.println("date " + date);
+                // String date = result.getString(5);
+                // System.out.println("date " + date);
 
                 name_label.setText(f_name1);
                 this.f_name.setText(f_name1);
@@ -302,6 +320,7 @@ public class user_acces extends javax.swing.JFrame {
         int check = JOptionPane.showConfirmDialog(null, "confirm hand over");
         int pdata = return_table.getSelectedRow();
         String id = return_table.getValueAt(pdata, 0).toString();
+        String b_id = return_table.getValueAt(pdata, 1).toString();
         try {
 
             if (check == 0) {
@@ -309,6 +328,7 @@ public class user_acces extends javax.swing.JFrame {
                 prt = con.prepareStatement(sql);
                 prt.execute();
                 //JOptionPane.showMessageDialog(null, "deleted");
+                email_send_table_delete(b_id);
                 send_return_data();
             }
         } catch (Exception e) {
@@ -317,38 +337,210 @@ public class user_acces extends javax.swing.JFrame {
     }
 
     public void return_date_check() {
-        String person_id = id_label.getText();
-        String getbookid = null, bookid=null, date = null;
+        int y = 0;
 
         try {
-            prt = con.prepareStatement("SELECT getbook_id , book_id, date FROM getbook WHERE person_id LIKE '%" + person_id + "%'");
+            prt = con.prepareStatement("SELECT  book_id, date FROM getbook WHERE 1");
             ResultSet result = prt.executeQuery();
             while (result.next()) {
-                getbookid = result.getString(1);
-                bookid = result.getString(2);
-                date = result.getString(3);
+                y = y + 1;
+            }
+
+        } catch (SQLException ex) {
+
+            JOptionPane.showMessageDialog(null, ex);
+        }
+
+        String person_idd = id_label.getText();
+        String bookid = null, date = null, person_id = null;
+        String[] arrydata = new String[y];
+        String[] bookdata = new String[y];
+        String[] persondata = new String[y];
+        int x = 0;
+
+        try {
+            prt = con.prepareStatement("SELECT  book_id, date, person_id FROM getbook WHERE 1");
+            ResultSet result = prt.executeQuery();
+            while (result.next()) {
+                bookid = result.getString(1);
+                date = result.getString(2);
+                person_id = result.getString(3);
+                bookdata[x] = bookid;
+                arrydata[x] = date;
+                persondata[x] = person_id;
+                x = x + 1;
             }
 
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex);
         }
 
-        ZoneId z = ZoneId.of("Asia/Colombo");
-        LocalDate today = LocalDate.now(z);
+        for (int i = 0; i < arrydata.length; i++) {
 
-        String current_date = today.toString();
+            String get_date = arrydata[i];
+            String get_person = persondata[i];
+            String book_id = bookdata[i];
 
-        SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date date1 = myFormat.parse(get_date);
+                Date date2 = myFormat.parse(current_date);
+
+                long dif = date2.getTime() - date1.getTime();
+                int daybetweendate = (int) (dif / (1000 * 60 * 60 * 24));
+
+                if (daybetweendate > 7) {
+                    System.out.println("return_date_check() book id " + book_id);
+                    send_email_checker(book_id);
+                    String countdate = String.valueOf(daybetweendate);
+                    if (get_person.equals(person_idd)) {
+                        r_label.setText("Plese return Book.. late date = " + countdate + "  book id = " + bookid);
+                    }
+                }
+
+            } catch (ParseException e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+
+    }
+
+    public void send_email(String b_id, String email) {
+        String book_name = null;
+        System.out.println("email    " + email);
+        System.out.println("book id send email method " + b_id);
+        try {
+            prt = con.prepareStatement("SELECT book_name FROM bookstore WHERE book_id LIKE '" + b_id + "'");
+            ResultSet result = prt.executeQuery();
+
+            while (result.next()) {
+                book_name = result.getString(1);
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+
+        System.out.println("start run ");
+        final String username = "your@email";
+        final String password = "*****";
+        String email2 = email;
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "true");
+
+        Session session = Session.getInstance(prop,
+                new javax.mail.Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
 
         try {
-            Date date1 = myFormat.parse(date);
-            Date date2 = myFormat.parse(current_date);
-            
-            long dif = date2.getTime() - date1.getTime();
-            int daybetweendate = (int) (dif / (1000 * 60 * 60 * 24));
-            String countdate = String.valueOf(daybetweendate);
-            returnbook.setText(countdate);
-        } catch (Exception e) {
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress(email2));
+            message.setSubject("Book withdrawal notice");
+            message.setText("Please bring back the " + book_name + " book and submit it. Available dates are over.");
+
+            Transport.send(message);
+            System.out.println("send email addres " + email);
+            insert_email_send_data(b_id, email);
+            System.out.println("Done");
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void send_email_checker(String b_id) {
+        System.out.println("send_email_checker()  book Id" + b_id);
+        int runcheck = 0;
+
+        String date = null, email = null, person_i = null;
+
+        try {
+            prt = con.prepareStatement("SELECT date,email FROM email WHERE book_id LIKE '" + b_id + "'");
+            ResultSet result = prt.executeQuery();
+            while (result.next()) {
+                runcheck = 1;
+                date = result.getString(1);
+                email = result.getString(2);
+
+                try {
+                    Date date1 = myFormat.parse(date);
+                    Date date2 = myFormat.parse(current_date);
+
+                    long dif = date2.getTime() - date1.getTime();
+                    int daybetweendate = (int) (dif / (1000 * 60 * 60 * 24));
+                    if (daybetweendate > 3) {
+                        send_email(b_id, email);
+                    }
+
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, e);
+                }
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex);
+        }
+
+        if (runcheck == 0) {
+            try {
+                prt = con.prepareStatement("SELECT person_id FROM getbook WHERE book_id LIKE '" + b_id + "'");
+                ResultSet result = prt.executeQuery();
+
+                while (result.next()) {
+                    String person_idd = result.getString(1);
+                    System.out.println("check person Id " + person_idd);
+                    try {
+                        prt = con.prepareStatement("SELECT email FROM person WHERE id LIKE '" + person_idd + "'");
+                        ResultSet resul = prt.executeQuery();
+
+                        while (resul.next()) {
+                            email = resul.getString(1);
+                            System.out.println("email checker " + email);
+                            send_email(b_id, email);
+                        }
+
+                    } catch (SQLException e) {
+                        JOptionPane.showMessageDialog(null, e);
+                    }
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+    }
+
+    public void insert_email_send_data(String b_id, String email) {
+
+        email_send_table_delete(b_id);
+
+        System.out.println("come data insert " + b_id + "  and  " + email);
+        try {
+            String sql = "INSERT INTO email(email,book_id) VALUES('" + email + "','" + b_id + "')";
+            prt = con.prepareStatement(sql);
+            prt.execute();
+            System.out.println("insert succesful ");
+        } catch (SQLException ex) {
+            Logger.getLogger(user_acces.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void email_send_table_delete(String b_id) {
+        try {
+            String sql = "DELETE FROM email WHERE book_id='" + b_id + "'";
+            prt = con.prepareStatement(sql);
+            prt.execute();
+            System.out.println("delete succesfuly");
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, e);
         }
     }
@@ -418,7 +610,7 @@ public class user_acces extends javax.swing.JFrame {
         jLabel15 = new javax.swing.JLabel();
         name_label = new javax.swing.JLabel();
         id_label = new javax.swing.JLabel();
-        returnbook = new javax.swing.JLabel();
+        r_label = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(235, 236, 241));
@@ -1158,19 +1350,19 @@ public class user_acces extends javax.swing.JFrame {
         id_label.setText("ID");
         id_label.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
-        returnbook.setBackground(new java.awt.Color(255, 255, 255));
-        returnbook.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        returnbook.setForeground(new java.awt.Color(255, 0, 51));
-        returnbook.setText("jLabel5");
+        r_label.setBackground(new java.awt.Color(255, 255, 255));
+        r_label.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        r_label.setForeground(new java.awt.Color(255, 0, 51));
+        r_label.setText("Have a nice day");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(271, 271, 271)
-                .addComponent(returnbook, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 218, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(r_label, javax.swing.GroupLayout.DEFAULT_SIZE, 579, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(name_label, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(id_label, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1184,7 +1376,7 @@ public class user_acces extends javax.swing.JFrame {
                 .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
                 .addComponent(id_label)
                 .addComponent(name_label)
-                .addComponent(returnbook))
+                .addComponent(r_label))
         );
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 0, 800, 40));
@@ -1298,10 +1490,17 @@ public class user_acces extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         book_serch();
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        get_table_data();
+
+        String check = r_label.getText();
+        if (check == "Have a nice day") {
+            get_table_data();
+        } else {
+            JOptionPane.showMessageDialog(null, "Please return your book");
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void return_tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_return_tableMouseClicked
@@ -1314,6 +1513,7 @@ public class user_acces extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         delete_get_data();
+        
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void profile2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profile2MouseClicked
@@ -1424,14 +1624,15 @@ public class user_acces extends javax.swing.JFrame {
     private javax.swing.JLabel profile;
     private javax.swing.JLabel profile2;
     private javax.swing.JPanel profile_pannel;
+    private javax.swing.JLabel r_label;
     private javax.swing.JLabel return_book;
     private javax.swing.JPanel return_pannel;
     private javax.swing.JTable return_table;
-    private javax.swing.JLabel returnbook;
     private javax.swing.JTextField search_box;
     private javax.swing.JTextField search_box1;
     private javax.swing.JLabel select_book_name;
     private javax.swing.JLabel select_book_name1;
     private javax.swing.JButton update_btn;
     // End of variables declaration//GEN-END:variables
+
 }

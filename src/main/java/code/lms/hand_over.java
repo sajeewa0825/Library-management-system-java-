@@ -86,7 +86,7 @@ public class hand_over extends javax.swing.JFrame {
 
     public void delete_get_data() {
         int check = JOptionPane.showConfirmDialog(null, "confirm hand over");
-
+        String b_id = this.b_id.getText();
         try {
             String id = getbook_id.getText();
             if (check == 0) {
@@ -95,6 +95,9 @@ public class hand_over extends javax.swing.JFrame {
                 prt.execute();
                 //JOptionPane.showMessageDialog(null, "deleted");
                 send_hand_over_data();
+                main_menu man = new main_menu();
+                man.email_send_table_delete(b_id);
+                
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);

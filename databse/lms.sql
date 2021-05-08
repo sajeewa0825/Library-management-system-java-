@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 06, 2021 at 07:08 PM
+-- Generation Time: May 08, 2021 at 08:58 PM
 -- Server version: 10.4.18-MariaDB
 -- PHP Version: 8.0.3
 
@@ -50,6 +50,19 @@ INSERT INTO `bookstore` (`book_id`, `book_name`, `book_author`, `date`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `email`
+--
+
+CREATE TABLE `email` (
+  `date` date NOT NULL DEFAULT current_timestamp(),
+  `email` varchar(50) NOT NULL,
+  `book_id` int(10) NOT NULL,
+  `email_send_id` int(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `getbook`
 --
 
@@ -57,17 +70,8 @@ CREATE TABLE `getbook` (
   `getbook_id` int(10) NOT NULL,
   `book_id` int(10) NOT NULL,
   `person_id` int(10) NOT NULL,
-  `date` timestamp(6) NOT NULL DEFAULT current_timestamp(6)
+  `date` date DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `getbook`
---
-
-INSERT INTO `getbook` (`getbook_id`, `book_id`, `person_id`, `date`) VALUES
-(1, 1, 1, '2021-04-29 14:37:47.834464'),
-(6, 4, 5, '2021-04-30 18:15:15.954642'),
-(11, 2, 2, '2021-05-06 16:30:37.761893');
 
 -- --------------------------------------------------------
 
@@ -88,7 +92,12 @@ CREATE TABLE `hand_over` (
 
 INSERT INTO `hand_over` (`return_id`, `get_id`, `p_id`, `date`) VALUES
 (66, 10, 2, '2021-05-06 16:28:40.842856'),
-(67, 12, 2, '2021-05-06 16:31:23.204094');
+(67, 12, 2, '2021-05-06 16:31:23.204094'),
+(68, 15, 1, '2021-05-07 19:27:43.222424'),
+(69, 16, 1, '2021-05-07 19:27:47.576246'),
+(70, 1, 3, '2021-05-08 18:36:55.202831'),
+(71, 18, NULL, '2021-05-08 18:50:30.735628'),
+(72, 6, NULL, '2021-05-08 18:50:43.926750');
 
 -- --------------------------------------------------------
 
@@ -120,7 +129,7 @@ CREATE TABLE `person` (
   `last_name` varchar(50) NOT NULL,
   `email` varchar(50) NOT NULL,
   `password` varchar(50) NOT NULL,
-  `date` timestamp(6) NOT NULL DEFAULT current_timestamp(6)
+  `date` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -128,13 +137,14 @@ CREATE TABLE `person` (
 --
 
 INSERT INTO `person` (`id`, `first_name`, `last_name`, `email`, `password`, `date`) VALUES
-(1, 'sunethma', 'sethmini', 'su@gmal.com', '1234', '2021-04-29 14:34:24.257738'),
-(2, 'upali', 'werathunga', 'upali@gmail.com', '123', '2021-04-29 14:49:43.003904'),
-(3, 'rathna', 'werasekara', 'com', '456', '2021-04-29 14:50:13.051930'),
-(4, 'amali', 'mudi', 'amali@gmail.com', 'dswa', '2021-04-29 14:50:36.646912'),
-(5, 'amara', 'hhh', 'sunethma@gmail.com12344', 'asdeee', '2021-04-30 05:53:52.830346'),
-(6, 'kumudu', 'kumar', 'kumudu@hotmail.com', '123', '2021-05-06 16:37:48.505497'),
-(7, 'mali', 'mal', 'mal@gmail.com', '1234', '2021-05-06 16:48:54.612025');
+(1, 'sunethma', 'sethmini', 's', '1', '2021-04-29'),
+(2, 'upali', 'werathunga', '', '123', '2021-04-29'),
+(3, 'rathna', 'werasekara', 'gakifi1424@animex98.com', '456', '2021-04-29'),
+(4, 'amali', 'mudi', 'amali@gmail.com', 'dswa', '2021-04-29'),
+(5, 'amara', 'hhh', 'tdmjerwxluppbvajsk@twzhhq.online', 'asdeee', '2021-04-30'),
+(6, 'kumudu', 'kumar', 'kumudu@hotmail.com', '123', '2021-05-06'),
+(7, 'mali', 'mal', 'mal@gmail.com', '1234', '2021-05-06'),
+(8, 'mm', 'mmm', 'nn', '123', '2021-05-06');
 
 --
 -- Indexes for dumped tables
@@ -145,6 +155,13 @@ INSERT INTO `person` (`id`, `first_name`, `last_name`, `email`, `password`, `dat
 --
 ALTER TABLE `bookstore`
   ADD PRIMARY KEY (`book_id`);
+
+--
+-- Indexes for table `email`
+--
+ALTER TABLE `email`
+  ADD PRIMARY KEY (`email_send_id`),
+  ADD KEY `email` (`email`) USING BTREE;
 
 --
 -- Indexes for table `getbook`
@@ -171,7 +188,8 @@ ALTER TABLE `password`
 -- Indexes for table `person`
 --
 ALTER TABLE `person`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -184,22 +202,28 @@ ALTER TABLE `bookstore`
   MODIFY `book_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
+-- AUTO_INCREMENT for table `email`
+--
+ALTER TABLE `email`
+  MODIFY `email_send_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
 -- AUTO_INCREMENT for table `getbook`
 --
 ALTER TABLE `getbook`
-  MODIFY `getbook_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `getbook_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `hand_over`
 --
 ALTER TABLE `hand_over`
-  MODIFY `return_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `return_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT for table `person`
 --
 ALTER TABLE `person`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables

@@ -5,6 +5,28 @@
  */
 package code.lms;
 
+import com.mysql.cj.protocol.Resultset;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author sajeewa
@@ -14,8 +36,223 @@ public class main_menu extends javax.swing.JFrame {
     /**
      * Creates new form main_menu
      */
+    Connection con;
+    PreparedStatement prt;
+    Resultset rs = null;
+    ZoneId z = ZoneId.of("Asia/Colombo");
+    LocalDate today = LocalDate.now(z);
+    String current_date = today.toString();
+    SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
+
     public main_menu() {
+        con = DBconnect.connect();
         initComponents();
+        return_date_check();
+    }
+
+    public void return_date_check() {
+        int y = 0;
+
+        try {
+            prt = con.prepareStatement("SELECT  book_id, date FROM getbook WHERE 1");
+            ResultSet result = prt.executeQuery();
+            while (result.next()) {
+                y = y + 1;
+            }
+
+        } catch (SQLException ex) {
+
+            JOptionPane.showMessageDialog(null, ex);
+        }
+
+        String bookid = null, date = null, person_id = null;
+        String[] arrydata = new String[y];
+        String[] bookdata = new String[y];
+        String[] persondata = new String[y];
+        int x = 0;
+
+        try {
+            prt = con.prepareStatement("SELECT  book_id, date, person_id FROM getbook WHERE 1");
+            ResultSet result = prt.executeQuery();
+            while (result.next()) {
+                bookid = result.getString(1);
+                date = result.getString(2);
+                person_id = result.getString(3);
+                bookdata[x] = bookid;
+                arrydata[x] = date;
+                persondata[x] = person_id;
+                x = x + 1;
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex);
+        }
+
+        for (int i = 0; i < arrydata.length; i++) {
+
+            String get_date = arrydata[i];
+            String get_person = persondata[i];
+            String book_id = bookdata[i];
+
+            try {
+                Date date1 = myFormat.parse(get_date);
+                Date date2 = myFormat.parse(current_date);
+
+                long dif = date2.getTime() - date1.getTime();
+                int daybetweendate = (int) (dif / (1000 * 60 * 60 * 24));
+
+                if (daybetweendate > 7) {
+                    System.out.println("return_date_check() book id " + book_id);
+                    send_email_checker(book_id);
+
+                }
+
+            } catch (ParseException e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+
+    }
+
+    public void send_email(String b_id, String email) {
+        String book_name = null;
+        System.out.println("email    " + email);
+        System.out.println("book id send email method " + b_id);
+        try {
+            prt = con.prepareStatement("SELECT book_name FROM bookstore WHERE book_id LIKE '" + b_id + "'");
+            ResultSet result = prt.executeQuery();
+
+            while (result.next()) {
+                book_name = result.getString(1);
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+
+        System.out.println("start run ");
+        final String username = "your@email";
+        final String password = "******";
+        String email2 = email;
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "true");
+
+        Session session = Session.getInstance(prop,
+                new javax.mail.Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+
+        try {
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress(email2));
+            message.setSubject("Book withdrawal notice");
+            message.setText("Please bring back the " + book_name + " book and submit it. Available dates are over.");
+
+            Transport.send(message);
+            System.out.println("send email addres " + email);
+            insert_email_send_data(b_id, email);
+            System.out.println("Done");
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void send_email_checker(String b_id) {
+        System.out.println("send_email_checker()  book Id" + b_id);
+        int runcheck = 0;
+
+        String date = null, email = null, person_i = null;
+
+        try {
+            prt = con.prepareStatement("SELECT date,email FROM email WHERE book_id LIKE '" + b_id + "'");
+            ResultSet result = prt.executeQuery();
+            while (result.next()) {
+                runcheck = 1;
+                date = result.getString(1);
+                email = result.getString(2);
+
+                try {
+                    Date date1 = myFormat.parse(date);
+                    Date date2 = myFormat.parse(current_date);
+
+                    long dif = date2.getTime() - date1.getTime();
+                    int daybetweendate = (int) (dif / (1000 * 60 * 60 * 24));
+                    if (daybetweendate > 3) {
+                        send_email(b_id, email);
+                    }
+
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, e);
+                }
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex);
+        }
+
+        if (runcheck == 0) {
+            try {
+                prt = con.prepareStatement("SELECT person_id FROM getbook WHERE book_id LIKE '" + b_id + "'");
+                ResultSet result = prt.executeQuery();
+
+                while (result.next()) {
+                    String person_idd = result.getString(1);
+                    System.out.println("check person Id " + person_idd);
+                    try {
+                        prt = con.prepareStatement("SELECT email FROM person WHERE id LIKE '" + person_idd + "'");
+                        ResultSet resul = prt.executeQuery();
+
+                        while (resul.next()) {
+                            email = resul.getString(1);
+                            System.out.println("email checker " + email);
+                            send_email(b_id, email);
+                        }
+
+                    } catch (SQLException e) {
+                        JOptionPane.showMessageDialog(null, e);
+                    }
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+    }
+
+    public void insert_email_send_data(String b_id, String email) {
+
+        email_send_table_delete(b_id);
+
+        System.out.println("come data insert " + b_id + "  and  " + email);
+        try {
+            String sql = "INSERT INTO email(email,book_id) VALUES('" + email + "','" + b_id + "')";
+            prt = con.prepareStatement(sql);
+            prt.execute();
+            System.out.println("insert succesful ");
+        } catch (SQLException ex) {
+            Logger.getLogger(user_acces.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void email_send_table_delete(String b_id) {
+        try {
+            String sql = "DELETE FROM email WHERE book_id='" + b_id + "'";
+            prt = con.prepareStatement(sql);
+            prt.execute();
+            System.out.println("delete succesfuly");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
     }
 
     /**
@@ -201,13 +438,13 @@ public class main_menu extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanel4AncestorAdded
 
     private void btn_registerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_registerActionPerformed
-       new signup().setVisible(true);
-       this.setVisible(false);
+        new signup().setVisible(true);
+        this.setVisible(false);
     }//GEN-LAST:event_btn_registerActionPerformed
 
     private void btn_add_bookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_add_bookActionPerformed
-       new addbook().setVisible(true);
-       this.setVisible(false);
+        new addbook().setVisible(true);
+        this.setVisible(false);
     }//GEN-LAST:event_btn_add_bookActionPerformed
 
     private void btn_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_logoutActionPerformed
@@ -216,8 +453,8 @@ public class main_menu extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_logoutActionPerformed
 
     private void btn_find_bookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_find_bookActionPerformed
-       new find_book().setVisible(true);
-       this.setVisible(false);
+        new find_book().setVisible(true);
+        this.setVisible(false);
     }//GEN-LAST:event_btn_find_bookActionPerformed
 
     private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_updateActionPerformed
