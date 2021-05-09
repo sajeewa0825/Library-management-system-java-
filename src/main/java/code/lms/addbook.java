@@ -18,10 +18,14 @@ import javax.swing.plaf.FileChooserUI;
 import code.lms.DBconnect;
 import com.mysql.cj.protocol.Resultset;
 import com.mysql.cj.xdevapi.Result;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import javax.naming.spi.DirStateFactory;
+import javax.swing.Icon;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -42,7 +46,9 @@ public class addbook extends javax.swing.JFrame {
 
     Connection connect = null;
     PreparedStatement prt = null;
-    Resultset rs= null;
+    Resultset rs = null;
+    byte[] bimage;
+    byte[] buf;
 
     void showdate() {
         Date d = new Date();
@@ -60,7 +66,37 @@ public class addbook extends javax.swing.JFrame {
             }
         }).start();
     }
-    
+
+    public void set_images() {
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("4 supported extensions", "jpg,png,gif,jpeg");
+        chooser.setFileFilter(filter);
+        int selected = chooser.showOpenDialog(null);
+
+        if (selected == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            String get_select_images = file.getAbsolutePath();
+            JOptionPane.showMessageDialog(null, get_select_images);
+            ImageIcon image_icon = new ImageIcon(get_select_images);
+
+            Image imfit = image_icon.getImage();
+            Image imgfit = imfit.getScaledInstance(bookphoto.getWidth(), bookphoto.getHeight(), Image.SCALE_SMOOTH);
+            bookphoto.setIcon(new ImageIcon(imgfit));
+
+            try {
+                File image = new File(get_select_images);
+                FileInputStream fis = new FileInputStream(image);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                byte[] buf = new byte[1024];
+                for (int readnum; (readnum = fis.read(buf)) != -1;) {
+                    baos.write(buf, 0, readnum);
+                }
+                bimage = baos.toByteArray();
+               // bookphoto.setIcon(resizeImage(bimage, buf));
+            } catch (Exception e) {
+            }
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -320,24 +356,12 @@ public class addbook extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_book_authorActionPerformed
 
-    private void addbookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addbookActionPerformed
-        JFileChooser chooser = new JFileChooser();
-        chooser.showOpenDialog(null);
-        File f = chooser.getSelectedFile();
-        String filename = f.getAbsolutePath();
-        Image getAbsolutePath = null;
-        ImageIcon icon = new ImageIcon(filename);
-        Image image = icon.getImage().getScaledInstance(bookphoto.getWidth(), bookphoto.getHeight(), Image.SCALE_SMOOTH);
-        bookphoto.setIcon(icon);
-
-    }//GEN-LAST:event_addbookActionPerformed
-
     private void btnsubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsubmitActionPerformed
         String book_name = bookname.getText();
         String book_author = this.book_author.getText();
 
         try {
-            String sql = "INSERT INTO bookstore(book_name,book_author) VALUES('" + book_name + "' , '" + book_author + "')";
+            String sql = "INSERT INTO bookstore(book_name,book_author,images) VALUES('" + book_name + "' , '" + book_author + "','" + buf + "')";
             prt = connect.prepareStatement(sql);
             prt.execute();
             JOptionPane.showMessageDialog(null, "Insert succesfuly");
@@ -345,6 +369,10 @@ public class addbook extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e);
         }
     }//GEN-LAST:event_btnsubmitActionPerformed
+
+    private void addbookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addbookActionPerformed
+        set_images();
+    }//GEN-LAST:event_addbookActionPerformed
 
     /**
      * @param args the command line arguments
@@ -403,4 +431,8 @@ public class addbook extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel time;
     // End of variables declaration//GEN-END:variables
+
+    private Icon resizeImage(byte[] bimage, byte[] buf) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

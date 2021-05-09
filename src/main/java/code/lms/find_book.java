@@ -6,12 +6,14 @@
 package code.lms;
 
 import com.mysql.cj.protocol.Resultset;
+import java.awt.Image;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import net.proteanit.sql.DbUtils;
 
@@ -34,7 +36,7 @@ public class find_book extends javax.swing.JFrame {
         book_table_load();
         person_table_load();
     }
-    
+
     public void book_table_load() {
         try {
             String sql = "SELECT `book_id` as ID, `book_name` as Name, `book_author` as Autor FROM `bookstore`";
@@ -77,6 +79,21 @@ public class find_book extends javax.swing.JFrame {
         b_id.setText(bid);
         b_author2.setText(b_authors);
         b_name1.setText(b_names);
+
+        try {
+            prt = con.prepareStatement("SELECT  book_id, date FROM getbook WHERE 1");
+            ResultSet result = prt.executeQuery();
+            while (result.next()) {
+                byte img[] = result.getBytes("image");
+                ImageIcon image = new ImageIcon(img);
+                Image im = image.getImage();
+                Image myimage = im.getScaledInstance(book_img.getWidth(),book_img.getHeight(), Image.SCALE_SMOOTH);
+                book_img.setIcon(new ImageIcon(myimage));
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+        
     }
 
     public void book_serch() {
@@ -122,7 +139,7 @@ public class find_book extends javax.swing.JFrame {
     public void get_table_data() {
         int bdata = booktable.getSelectedRow();
         String bid = booktable.getValueAt(bdata, 0).toString();
-        String data2="0";
+        String data2 = "0";
         try {
             prt = con.prepareStatement("SELECT * FROM getbook WHERE book_id LIKE '%" + bid + "%' ");
             ResultSet result = prt.executeQuery();
@@ -180,6 +197,7 @@ public class find_book extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         b_serch = new javax.swing.JTextField();
         p_serchbtn = new javax.swing.JButton();
+        book_img = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -352,6 +370,9 @@ public class find_book extends javax.swing.JFrame {
         });
         jPanel1.add(p_serchbtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, -1, -1));
 
+        book_img.setText("jLabel2");
+        jPanel1.add(book_img, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, 170, 120));
+
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1010, 560));
 
         setSize(new java.awt.Dimension(1024, 597));
@@ -441,6 +462,7 @@ public class find_book extends javax.swing.JFrame {
     private javax.swing.JLabel b_name1;
     private javax.swing.JTextField b_serch;
     private javax.swing.JLabel b_serchbtn;
+    private javax.swing.JLabel book_img;
     private javax.swing.JTable booktable;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
